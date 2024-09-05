@@ -25,7 +25,7 @@
 #ifndef __MALLOC_H
 #define __MALLOC_H
 
-#include "./SYSTEM/sys/sys.h"
+#include "../SYSTEM/sys/sys.h"
 
 #ifndef NULL
 #define NULL 0

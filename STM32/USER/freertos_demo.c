@@ -1,8 +1,5 @@
 #include "freertos_demo.h"
-#include "./SYSTEM/usart/usart.h"
-#include "./BSP/LED/led.h"
-#include "./BSP/LCD/lcd.h"
-#include "./BSP/KEY/key.h"
+#include "../SYSTEM/usart/usart.h"
 /*FreeRTOS*********************************************************************************************/
 #include "FreeRTOS.h"
 #include "task.h"
@@ -132,9 +129,7 @@ void start_task(void *pvParameters){
  */
 void task1(void *pvParameters){
 	while(1){
-		printf("task1 running \r\n!");
-		LED0_TOGGLE();
-		vTaskDelay(500);  // 500ms
+		
 	}
 }
 
@@ -144,14 +139,7 @@ void task1(void *pvParameters){
  * @retval      ÎÞ
  */
 void task3(void *pvParameters){
-	uint8_t key=0;
 	while(1){
-		printf("task3 running \r\n!");
-		key=key_scan(0);
-		if(key==KEY0_PRES){
-			vTaskSuspend(Task1Task_Handler);		// ¹ÒÆð
-		}
-		
-		vTaskDelay(10);
+
 	}
 }

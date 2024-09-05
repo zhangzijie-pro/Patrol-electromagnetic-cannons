@@ -2,8 +2,8 @@
 #define FREERTOS_CONFIG_H
 
 /* 头文件 */
-#include "./SYSTEM/sys/sys.h"
-#include "./SYSTEM/usart/usart.h"
+#include "../SYSTEM/sys/sys.h"
+#include "../SYSTEM/usart/usart.h"
 #include <stdint.h>
 
 extern uint32_t SystemCoreClock;
@@ -26,7 +26,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_RECURSIVE_MUTEXES                     1                       /* 1: 使能递归互斥信号量, 默认: 0 */
 #define configUSE_COUNTING_SEMAPHORES                   1                       /* 1: 使能计数信号量, 默认: 0 */
 #define configUSE_ALTERNATIVE_API                       0                       /* 已弃用!!! */
-#define configQUEUE_REGISTRY_SIZE                       8                       /* 定义可以注册的信号量和消息队列的个数, 默认: 0 */
+#define configQUEUE_REGISTRY_SIZE                       1                       /* 定义可以注册的信号量和消息队列的个数, 默认: 0 */
 #define configUSE_QUEUE_SETS                            1                       /* 1: 使能队列集, 默认: 0 */
 #define configUSE_TIME_SLICING                          1                       /* 1: 使能时间片调度, 默认: 1 */
 #define configUSE_NEWLIB_REENTRANT                      0                       /* 1: 任务创建时分配Newlib的重入结构体, 默认: 0 */

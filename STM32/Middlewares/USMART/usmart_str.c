@@ -47,8 +47,8 @@
  ****************************************************************************************************
  */
 
-#include "./USMART/usmart.h"
-#include "./USMART/usmart_str.h"
+#include "../USMART/usmart.h"
+#include "../USMART/usmart_str.h"
 
 /**
  * @brief       ¶Ô±È×Ö·û´®str1ºÍstr2

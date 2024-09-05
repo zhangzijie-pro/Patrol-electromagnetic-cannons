@@ -42,8 +42,8 @@
  ****************************************************************************************************
  */
 
-#include "./USMART/usmart.h"
-#include "./USMART/usmart_port.h"
+#include "../USMART/usmart.h"
+#include "../USMART/usmart_port.h"
 
 TIM_HandleTypeDef g_timx_usmart_handle;      /* ¶¨Ê±Æ÷¾ä±ú */
 

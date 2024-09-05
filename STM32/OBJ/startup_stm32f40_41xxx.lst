@@ -859,10 +859,9 @@ Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=..\obj\startup_stm32f40_41xxx.d -o..\obj\startup_stm32f40_41xxx
 .o -I.\RTE\_LED -IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.
 17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include -IC:\Keil_v5\ARM\CMSIS\Include -
-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Device\Inclu
-de --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 527" --p
-redefine="STM32F407xx SETA 1" --list=..\obj\startup_stm32f40_41xxx.lst ..\CORE\
-startup_stm32f40_41xxx.s
+-predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 527" --prede
+fine="STM32F407xx SETA 1" --list=..\obj\startup_stm32f40_41xxx.lst ..\CORE\star
+tup_stm32f40_41xxx.s
 
 
 
