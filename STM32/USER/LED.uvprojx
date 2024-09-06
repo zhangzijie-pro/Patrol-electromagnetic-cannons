@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\FWLIB\inc;..\DSP;..\Middlewares\FreeRTOS\include;..\Middlewares\MALLOC;..\USER;..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\FWLIB\inc;..\DSP;..\Middlewares\FreeRTOS\include;..\Middlewares\MALLOC;..\USER;..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3;..\HARDWARE\usart;..\HARDWARE\radar</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -423,14 +423,14 @@
               <FilePath>..\HARDWARE\PWM\pwm.c</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\usart\usart.c</FilePath>
-            </File>
-            <File>
               <FileName>radar.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\radar\radar.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardware_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\usart\hardware_usart.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -11,7 +11,3 @@ int main(void)
 		
 	}
 }
-
-
-
-

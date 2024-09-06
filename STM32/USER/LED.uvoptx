@@ -286,8 +286,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\usart\usart.c</PathWithFileName>
-      <FilenameWithoutPath>usart.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\radar\radar.c</PathWithFileName>
+      <FilenameWithoutPath>radar.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -298,8 +298,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\radar\radar.c</PathWithFileName>
-      <FilenameWithoutPath>radar.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\usart\hardware_usart.c</PathWithFileName>
+      <FilenameWithoutPath>hardware_usart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
