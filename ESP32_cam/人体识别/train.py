@@ -1,11 +1,10 @@
 # 训练模型
-import torch.optim as optim
-import torch
 import torch.nn as nn
 import init
 import model
 import torch.optim as optim
 from torch.optim import lr_scheduler
+import torch.onnx
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.model.to(device)
@@ -53,11 +52,4 @@ for epoch in range(num_epochs):
         val_acc = corrects.double() / len(init.val_loader.dataset)
         print(f'Validation Loss: {val_loss:.4f}, Accuracy: {val_acc:.4f}')
 
-torch.save(model.model.state_dict(), 'model_train_person.pth')
-
-import torch.onnx
-
-# 假设模型的输入大小为 (1, 3, 224, 224)
-dummy_input = torch.randn(1, 3, 224, 224, device=device)
-onnx_path = 'model.onnx'
-torch.onnx.export(model.model, dummy_input, onnx_path, verbose=True)
+torch.save(model.model.state_dict(), 'model.pth')

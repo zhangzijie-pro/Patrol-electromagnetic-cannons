@@ -1,9 +1,5 @@
 #include "esp_camera.h"
 #include <WiFi.h>
-#include <TensorFlowLite.h>
-#include <tensorflow/lite/micro/all_ops_resolver.h>
-#include <tensorflow/lite/micro/micro_interpreter.h>
-#include <tensorflow/lite/schema/schema_generated.h>
 
 //
 // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
@@ -46,16 +42,6 @@ const char *password = "zzj55555";
 void startCameraServer();
 void setupLedFlash(int pin);
 
-camera_fb_t *captureFrame(){
-  camera_fb_t *fp = esp_camera_fb_get();
-  
-  if (!fb) {
-    Serial.println("Camera capture failed");
-    return nullptr;
-  }
-
-  fp->
-}
 
 void setup() {
   Serial.begin(115200);

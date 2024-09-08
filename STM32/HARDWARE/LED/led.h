@@ -2,6 +2,8 @@
 #define __LED_H
 #include "sys.h"
 
-void LED_Init(void);//≥ı ºªØ
+#define LED1 PFout(9)	  // D1
+#define LED2 PFout(10)	// D2	 
 
+void LED_Init(void);	 				    
 #endif

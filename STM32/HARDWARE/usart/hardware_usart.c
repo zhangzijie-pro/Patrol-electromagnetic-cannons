@@ -1,5 +1,4 @@
-// ????
-//------------------------ Include files ------------------------//
+#include "stm32f4xx.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,216 +6,101 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
-
-#include "..\fwlib\inc\stm32f4xx_rcc.h"
-#include "..\fwlib\inc\stm32f4xx_gpio.h"
-#include "..\fwlib\inc\stm32f4xx_usart.h"
 #include "hardware_usart.h"
 
-//--------------------------- Variable --------------------------// 
-//usart4 debug
-static int send_string_to_usart4(char * str);
-static int send_byte_to_usart4(char data);
-static int initialize_usart4(unsigned long int baudrate);
-static int my_printf4(const char * fmt,...);
-static int send_buffer4(void * ,int);
+void usart3_init();
+int send_byte_to_usart3(char data);
+int send_buffer3(void * buf,int len);
+int send_string_to_usart4(char * str);
+int send_byte_to_usart3(char data);
+int printf4(const char * fmt,...); 
 
-//usart2 debug
-static int send_string_to_usart2(char * str);
-static int send_byte_to_usart2(char data);
-static int initialize_usart2(unsigned long int baudrate);
-static int my_printf2(const char * fmt,...);
-static int send_buffer2(void * ,int);
-
-UART_T usart4 = {
-	.receive_ok_flag=0,
-	.counter=0,
-	.send_byte = send_byte_to_usart4,
-	.send_string = send_string_to_usart4,
-	.initialize=initialize_usart4,
-	.printf=my_printf4,
-	.send_buffer = send_buffer4
-	};
-
-	UART_T usart2 = {
-	.receive_ok_flag=0,
-	.counter=0,
-	.send_byte = send_byte_to_usart2,
-	.send_string = send_string_to_usart2,
-	.initialize=initialize_usart2,
-	.printf=my_printf2,
-	.send_buffer = send_buffer2
-	};
-	
-//--------------------------- Function --------------------------//
-//USART4 DEBUG
-/*
- * Name               : initialize_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int initialize_usart4(unsigned long int baudrate)
-{	
+void usart3_init(){
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
+	 
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE); //使能GPIOB时钟
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3,ENABLE);//使能USART3时钟	
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);             // GPIO??????
+	//串口3对应引脚复用映射
+	GPIO_PinAFConfig(GPIOB,GPIO_PinSource10,GPIO_AF_USART3); 
+	GPIO_PinAFConfig(GPIOB,GPIO_PinSource11,GPIO_AF_USART3); 
 	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;                        //PA0????????????
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);    
+  //USART3端口配置
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11 ; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;//复用功能
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	//速度50MHz
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽复用输出
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
+	GPIO_Init(GPIOB,&GPIO_InitStructure); 
+	
+  
+	//Usart3 NVIC 配置
+  NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=2 ;//抢占优先级0
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级0
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
+	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;                        //PA1?????????
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource0,GPIO_AF_UART4);           //PA0????????UART4
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource1,GPIO_AF_UART4);           //PA1????????UART4
-	
-	USART_DeInit(UART4);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);            //UART4??????
-	  
-	USART_InitStructure.USART_BaudRate = baudrate;                   //??????
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;      //8??????λ
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;           //1????λ
-	USART_InitStructure.USART_Parity = USART_Parity_No ;             //?????У??λ
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;  //?????
-	USART_Init(UART4, &USART_InitStructure);                         //?????UART4
-	USART_Cmd(UART4, ENABLE);                                        //???UART4
-	USART_ITConfig(UART4,USART_IT_PE,ENABLE);
-	USART_ITConfig(UART4,USART_IT_RXNE,ENABLE);                      //??UART4???ж?
-	
-	NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	return 0;
+   	//USART3 初始化设置
+	USART_InitStructure.USART_BaudRate = 115200;//串口波特率
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//字长为8位数据格式
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
+	USART_InitStructure.USART_Parity = USART_Parity_No;//无奇偶校验位
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//收发模式
+  USART_Init(USART3, &USART_InitStructure); //初始化串口3
+
+
+ 	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//开启串口接受中断	
+	USART_Cmd(USART3, ENABLE);                    //使能串口3 	
 }
 
-/*
- * Name               : send_buffer4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_buffer4(void * buf,int len)                                  
+void USART3_IRQHandler(void)
+{
+	while(USART_GetFlagStatus(USART3,USART_FLAG_RXNE) == 0)                                                           
+ 	receive_buffer[counter++]=USART_ReceiveData(UART4);
+ 	
+ 	if(receive_buffer[counter - 1] == '\n' && receive_buffer[counter - 2] == '\r'){   			
+			receive_buffer[counter-1]=0;
+ 			counter=0;                                
+ 	   	receive_ok_flag=1;                      
+ 		}	
+}
+
+int send_buffer3(void * buf,int len)                                  
 {
 	char *p = (char *)buf;
 	
 	if(len <= 0)return -1;
 	
 	while(len --){
-		send_byte_to_usart4(*p);
+		send_byte_to_usart3(*p);
 		p ++;
 	}
 	
 	return 0;
 }
 
-/*
- * Name               : send_byte_to_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_byte_to_usart4(char data)          	                          //TTL???
+int send_byte_to_usart3(char data)
 {
-	while(!(USART_GetFlagStatus(UART4,USART_FLAG_TC) == 1));          //??????????????
-	USART_SendData(UART4,data);                                       //??????д????????????
+	while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
+	USART_SendData(USART3,data);                                       
 	
 	return 0;
 }
 
-/*
- * Name               : send_string_to_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_string_to_usart4(char * str)
+int send_string_to_usart4(char * str)
 {
 	while(*str!='\0'){
-		while(!(USART_GetFlagStatus(UART4,USART_FLAG_TC) == 1));
-		USART_SendData(UART4,*str++);	
+		while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
+		USART_SendData(USART3,*str++);	
 	}
 	return 0;
 }
 
-/*
- * Name               : UART4_IRQHandler
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-int UART4_IRQHandler(void)
-{	
-  while(USART_GetFlagStatus(UART4,USART_FLAG_RXNE) == 0);                                                                 
- 	usart4.receive_buffer[usart4.counter++]=USART_ReceiveData(UART4); //????????
- 	
- 	if(usart4.receive_buffer[usart4.counter - 1] == '\n' && usart4.receive_buffer[usart4.counter - 2] == '\r'){   			
-			usart4.receive_buffer[usart4.counter-1]=0;
- 			usart4.counter=0;                                
- 	   	usart4.receive_ok_flag=1;                      
- 		}
-	return 0;			
-}
-
-/*
- * Name               : printf
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int my_printf4(const char * fmt,...)             		                    //????4???
+int printf4(const char * fmt,...)             		                    //????4???
 {
 	__va_list arg_ptr; 
 	char buf[UART_BUFFER_SIZE];
@@ -231,188 +115,3 @@ static int my_printf4(const char * fmt,...)             		                    //
 
 	return 0;
 }
-
-//--------------------------- Function --------------------------//
-//USART4 DEBUG
-/*
- * Name               : initialize_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int initialize_usart2(unsigned long int baudrate)
-{	
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD,ENABLE);             // GPIO??????
-	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;                        //PA0????????????
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);    
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;                        //PD6?????????
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
-	
-	GPIO_PinAFConfig(GPIOD,GPIO_PinSource5,GPIO_AF_USART2);           //PA0????????USART2
-	GPIO_PinAFConfig(GPIOD,GPIO_PinSource6,GPIO_AF_USART2);           //PA1????????USART2
-	
-	USART_DeInit(USART2);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);            //USART2??????
-	  
-	USART_InitStructure.USART_BaudRate = baudrate;                   //??????
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;      //8??????λ
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;           //1????λ
-	USART_InitStructure.USART_Parity = USART_Parity_No ;             //?????У??λ
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;  //?????
-	USART_Init(USART2, &USART_InitStructure);                         //?????USART2
-	USART_Cmd(USART2, ENABLE);                                        //???USART2
-	USART_ITConfig(USART2,USART_IT_PE,ENABLE);
-	USART_ITConfig(USART2,USART_IT_RXNE,ENABLE);                      //??USART2???ж?
-	
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	return 0;
-}
-
-/*
- * Name               : send_buffer4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_buffer2(void * buf,int len)                                  
-{
-	char *p = (char *)buf;
-	
-	if(len <= 0)return -1;
-	
-	while(len --){
-		send_byte_to_usart2(*p);
-		p ++;
-	}
-	
-	return 0;
-}
-
-/*
- * Name               : send_byte_to_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_byte_to_usart2(char data)          	                          //TTL???
-{
-	while(!(USART_GetFlagStatus(USART2,USART_FLAG_TC) == 1));          //??????????????
-	USART_SendData(USART2,data);                                       //??????д????????????
-	
-	return 0;
-}
-
-/*
- * Name               : send_string_to_usart4
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int send_string_to_usart2(char * str)
-{
-	while(*str!='\0'){
-		while(!(USART_GetFlagStatus(USART2,USART_FLAG_TC) == 1));
-		USART_SendData(USART2,*str++);	
-	}
-	return 0;
-}
-
-/*
- * Name               : UART4_IRQHandler
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-int USART2_IRQHandler(void)
-{	
-  while(USART_GetFlagStatus(USART2,USART_FLAG_RXNE) == 0);                                                                 
- 	usart2.receive_buffer[usart2.counter++]=USART_ReceiveData(USART2); //????????
- 	
- 	if(usart2.receive_buffer[usart2.counter - 1] == '\n' && usart2.receive_buffer[usart2.counter - 2] == '\r'){   			
-			usart2.receive_buffer[usart2.counter-1]=0;
- 			usart2.counter=0;                                
- 	   	usart2.receive_ok_flag=1;                      
- 		}
-	return 0;			
-}
-
-/*
- * Name               : printf
- * Description        : ---
- * Author             : XiaomaGee
- * 
- * History
- * -------------------
- * Rev                : 0.00
- * Date               : 11/21/2015
- *
- * create.
- * -------------------
- */
-static int my_printf2(const char * fmt,...)             		                    //????2???
-{
-	__va_list arg_ptr; 
-	char buf[UART_BUFFER_SIZE];
-  		
-	memset(buf,'\0',sizeof(buf));
-
-	va_start(arg_ptr,fmt);
-	vsprintf(buf,fmt,arg_ptr);
-	va_end(arg_ptr);
-
-	send_string_to_usart2(buf);
-
-	return 0;
-}
-
