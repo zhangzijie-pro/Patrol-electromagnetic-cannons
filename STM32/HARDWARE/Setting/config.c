@@ -1,11 +1,42 @@
 #include "config.h"
-#include "stm32f4xx_tim.h"
 
 //* 解析报文 
-//* 1.读取HC-04返回数据
-//* 2.esp32-cam -> stm32f4: Usart		9字节报文 -> 5字节data
+//* 1.esp32-cam -> stm32f4: Usart		9字节报文 -> 6字节data
+uint32_t esp32_return_data[6];
 
 void deal_to_esp32_content(uint32_t *content)
 {
-	
+	int len= sizeof(content);
+	// 判断报文长度, 两字节的帧头和帧尾
+	if(len==8&&content[0]==content[1]&&content[7]&&!content[8])
+	{
+		esp32_return_data[0] = 0x01;					// 标志位是否为有效数据
+		
+		esp32_return_data[1] = content[2];		// 是否检测到有人
+		// x,y,w,h坐标
+		esp32_return_data[2] = content[3];
+		esp32_return_data[3] = content[4];
+		esp32_return_data[4] = content[5];
+		esp32_return_data[5] = content[6];
+		
+	}else{
+		esp32_return_data[0] = 0x00;
+	}
+}
+
+void deal_esp32_return_content(){
+	if(esp32_return_data[0]==0x01)		// 传回有效数据
+	{
+		if(esp32_return_data[1]==0x01)			// 检测到有人体存在
+		{
+			// 根据坐标移动电磁炮到指定位置....
+		}else if(esp32_return_data[1]==0x00)	// 无检测到人体
+		{
+			// 更换武器发射范围性内容....
+		}
+	}else if(esp32_return_data[0]==0x00)
+	{
+		// 无效数据处理
+		// pass
+	}
 }

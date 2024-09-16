@@ -6,13 +6,17 @@ uint8_t esp_Serial_RxFlag=0;
 
 void esp_init(void)
 {
-	      // 1. 使能USART3和GPIOA时钟
+		// 1. 使能USART3和GPIOB时钟
     RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
 
     // 2. 配置PB10 (TX) 和 PB11 (RX) 为复用功能
-    GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);
-    GPIOB->MODER |= (GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1); // 复用模式
+		// 设置PB10为复用功能模式
+    GPIOB->MODER &= ~(GPIO_MODER_MODER10);
+    GPIOB->MODER |= (GPIO_MODER_MODER10_1); // 复用模式
+    // 设置PB11为输入模式
+    GPIOB->MODER &= ~(GPIO_MODER_MODER11);
+    GPIOB->MODER |= (GPIO_MODER_MODER11);
     GPIOB->AFR[1] |= 0x0077; // 设置PB10和PB11为AF7（USART3）
 
     // 3. 配置USART3
@@ -23,6 +27,7 @@ void esp_init(void)
 
     // 4. 使能USART3中断
     NVIC_EnableIRQ(USART3_IRQn);
+		NVIC_SetPriority(USART3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 1, 0));
 }
 
 void esp_IRQHandler(void){

@@ -7,7 +7,6 @@
 "..\obj\motor.o"
 "..\obj\pwm.o"
 "..\obj\radar.o"
-"..\obj\hardware_usart.o"
 "..\obj\key.o"
 "..\obj\esp32.o"
 "..\obj\hc04.o"
