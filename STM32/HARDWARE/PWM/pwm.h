@@ -4,6 +4,9 @@
 #include "stm32f4xx.h"
 
 int PWM_initialize(void);
-int PWM_set_compare(int temp);
+void PWM_set_compare(int temp);
+
+void PWM_init_2(void);
+void PWM_set_compare_2(int value);
 
 #endif

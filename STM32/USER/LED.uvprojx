@@ -447,6 +447,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Setting\config.c</FilePath>
             </File>
+            <File>
+              <FileName>Servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Servo\Servo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
