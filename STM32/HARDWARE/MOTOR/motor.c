@@ -1,117 +1,119 @@
 #include "motor.h"
+#include "hc04.h"
 
+uint8_t HC_RxData;
 
 void Car_Init(void)
 {
-	// ³õÊ¼»¯·½ÏòGPIO
+	// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½GPIO
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);//Ê¹ÄÜGPIOBÊ±ÖÓ
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);//Ê¹ï¿½ï¿½GPIOBÊ±ï¿½ï¿½
 
   GPIO_InitStructure.GPIO_Pin = MOTOR1_DIR_PIN1 | MOTOR1_DIR_PIN2 | 
 																MOTOR2_DIR_PIN1 | MOTOR2_DIR_PIN2 | 
 																MOTOR3_DIR_PIN1 | MOTOR3_DIR_PIN2 | 
 																MOTOR4_DIR_PIN1 | MOTOR4_DIR_PIN2;
 	
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//ÆÕÍ¨Êä³öÄ£Ê½
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//ÍÆÍìÊä³ö
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ä£Ê½
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//ÉÏÀ­
-  GPIO_Init(GPIOF, &GPIO_InitStructure);//³õÊ¼»¯
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//ï¿½ï¿½ï¿½ï¿½
+  GPIO_Init(GPIOF, &GPIO_InitStructure);//ï¿½ï¿½Ê¼ï¿½ï¿½
 
 	PWM_initialize();
 }
 
-// Ç°½ø: ËùÓÐµç»úÕý×ª
-void Car_Go_Forward(void)
+// Ç°ï¿½ï¿½: ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½×ª
+void Car_Forward(void)
 {
-    // µç»ú1Õý×ª
+    // ï¿½ï¿½ï¿½1ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR1_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR1_DIR_PIN2);
 
-    // µç»ú2Õý×ª
+    // ï¿½ï¿½ï¿½2ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR2_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR2_DIR_PIN2);
 
-    // µç»ú3Õý×ª
+    // ï¿½ï¿½ï¿½3ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR3_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR3_DIR_PIN2);
 
-    // µç»ú4Õý×ª
+    // ï¿½ï¿½ï¿½4ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR4_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR4_DIR_PIN2);
 
-    PWM_set_compare(50);  // µç»ú1 PWM 50%
+    PWM_set_compare(50);  // ï¿½ï¿½ï¿½1 PWM 50%
 }
 
-// ºóÍË: ËùÓÐµç»ú·´×ª
-void Car_Go_Back(void)
+// ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½×ª
+void Car_Back(void)
 {
-    // µç»ú1·´×ª
+    // ï¿½ï¿½ï¿½1ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR1_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR1_DIR_PIN2);
 
-    // µç»ú2·´×ª
+    // ï¿½ï¿½ï¿½2ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR2_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR2_DIR_PIN2);
 
-    // µç»ú3·´×ª
+    // ï¿½ï¿½ï¿½3ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR3_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR3_DIR_PIN2);
 
-    // µç»ú4·´×ª
+    // ï¿½ï¿½ï¿½4ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR4_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR4_DIR_PIN2);
 
-    PWM_set_compare(50);  // µç»ú1 PWM 50%
+    PWM_set_compare(50);  // ï¿½ï¿½ï¿½1 PWM 50%
 }
 
-// ×ó×ª: ×ó±ßµç»ú·´×ª£¬ÓÒ±ßµç»úÕý×ª
+// ï¿½ï¿½×ª: ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½Ò±ßµï¿½ï¿½ï¿½ï¿½×ª
 void Car_Turn_Left(void)
 {
-    // ×ó±ßµç»ú·´×ª
+    // ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR1_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR1_DIR_PIN2);
     GPIO_ResetBits(GPIOB, MOTOR3_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR3_DIR_PIN2);
 
-    // ÓÒ±ßµç»úÕý×ª
+    // ï¿½Ò±ßµï¿½ï¿½ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR2_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR2_DIR_PIN2);
     GPIO_SetBits(GPIOB, MOTOR4_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR4_DIR_PIN2);
 
-    PWM_set_compare(50);  // ×ó±ßµç»ú
+    PWM_set_compare(50);  // ï¿½ï¿½ßµï¿½ï¿½
 }
 
-// ÓÒ×ª: ÓÒ±ßµç»ú·´×ª£¬×ó±ßµç»úÕý×ª
+// ï¿½ï¿½×ª: ï¿½Ò±ßµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½×ª
 void Car_Turn_Right(void)
 {
-    // ÓÒ±ßµç»ú·´×ª
+    // ï¿½Ò±ßµï¿½ï¿½ï¿½ï¿½×ª
     GPIO_ResetBits(GPIOB, MOTOR2_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR2_DIR_PIN2);
     GPIO_ResetBits(GPIOB, MOTOR4_DIR_PIN1);
     GPIO_SetBits(GPIOB, MOTOR4_DIR_PIN2);
 
-    // ×ó±ßµç»úÕý×ª
+    // ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½×ª
     GPIO_SetBits(GPIOB, MOTOR1_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR1_DIR_PIN2);
     GPIO_SetBits(GPIOB, MOTOR3_DIR_PIN1);
     GPIO_ResetBits(GPIOB, MOTOR3_DIR_PIN2);
 
-    PWM_set_compare(50);  // ×ó±ßµç»ú
+    PWM_set_compare(50);  // ï¿½ï¿½ßµï¿½ï¿½
 }
 
-// Í£Ö¹: ËùÓÐµç»úÍ£Ö¹
+// Í£Ö¹: ï¿½ï¿½ï¿½Ðµï¿½ï¿½Í£Ö¹
 void Car_Stop(void)
 {
-    // ËùÓÐµç»úÍ£Ö¹
+    // ï¿½ï¿½ï¿½Ðµï¿½ï¿½Í£Ö¹
     GPIO_ResetBits(GPIOB, MOTOR1_DIR_PIN1 | MOTOR1_DIR_PIN2);
     GPIO_ResetBits(GPIOB, MOTOR2_DIR_PIN1 | MOTOR2_DIR_PIN2);
     GPIO_ResetBits(GPIOB, MOTOR3_DIR_PIN1 | MOTOR3_DIR_PIN2);
     GPIO_ResetBits(GPIOB, MOTOR4_DIR_PIN1 | MOTOR4_DIR_PIN2);
 
-    // ÉèÖÃPWMÕ¼¿Õ±ÈÎª0£¬Í£Ö¹µç»ú×ª¶¯
+    // ï¿½ï¿½ï¿½ï¿½PWMÕ¼ï¿½Õ±ï¿½Îª0ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½×ªï¿½ï¿½
     PWM_set_compare(0);
 }
 
@@ -120,3 +122,29 @@ void Car_Set_Speed(uint16_t speed)
 {
 		PWM_set_compare(speed);
 }
+
+//void Control_hc_data(void){
+//		HC_RxData = hc_GetRxData();
+//		
+//		// Ð¡ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½50%ï¿½ï¿½pwm
+//		if(HC_RxData==0x0A){		// Ç°ï¿½ï¿½
+//			Car_Go_ForWard();
+//		}
+//		else if(HC_RxData==0x0B)	// ï¿½ï¿½×ª
+//		{
+//			Car_Turn_Left();
+//		}
+//		else if(HC_RxData==0x0C)		// ï¿½ï¿½×ª
+//		{
+//			Car_Turn_Right();
+//		}
+//		else if(HC_RxData==0x0D)		// ï¿½ï¿½ï¿½ï¿½
+//		{
+//			Car_GO_Back();
+//		}
+//		else if(HC_RxData==0x0E)		// Í£Ö¹
+//		{
+//			Car_Stop();
+//		}
+//}
+

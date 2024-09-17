@@ -30,9 +30,10 @@ uint8_t lanya[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0xA4,0x00,0x01,0x00, 0x04, 0
 uint8_t light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0x0C,0x01,0x50, 0x04, 0x03, 0x02, 0x01};												// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 uint8_t search_light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x1C, 0x04, 0x03, 0x02, 0x01};													// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 
-
 uint8_t radar_Serial_RxData;
-uint8_t radar_Serial_RxFlag=0;
+volatile uint8_t radar_Serial_RxFlag=0;							// 标志位，表示是否接收到完整的数组数据
+uint8_t radar_RxBuffer[RADAR_BUFFER_SIZE];  // 用于存储接收的数组数据
+volatile uint16_t radar_RxIndex = 0;        // 当前接收字节的索引 
 
 void radar_init(void)
 {
@@ -63,7 +64,14 @@ void radar_init(void)
 void radar_IRQHandler(void){
 	if(USART3->SR & USART_SR_RXNE){
 		radar_Serial_RxData = USART3->DR;
-		radar_Serial_RxFlag = 1;
+		// 将数据存入缓冲区
+		radar_RxBuffer[radar_RxIndex++] = radar_Serial_RxData;
+
+		// 判断是否接收完成（可以根据特殊字符或长度判断）
+		if (radar_RxIndex >= RADAR_BUFFER_SIZE || radar_Serial_RxData == '\n') {  // 这里假设\n表示结束
+				radar_Serial_RxFlag = 1;   // 设置接收完成标志
+				radar_RxIndex = 0;      // 重置索引，准备接收下一组数据
+		}
 	}
 }
 
@@ -129,3 +137,19 @@ uint8_t radar_GetRxData(void)
 	radar_Serial_RxFlag = 0;
 	return radar_Serial_RxData;
 }
+
+void radar_ClearRxFlag(void) {
+    radar_Serial_RxFlag = 0;
+}
+
+void radar_GetReceivedData(uint8_t* buffer, uint16_t* length) {
+    if (radar_GetRxFlag()) {
+        // 将接收到的数据复制到提供的缓冲区
+        memcpy(buffer, radar_RxBuffer, radar_RxIndex);
+        *length = radar_RxIndex;  // 返回接收到的数组长度
+        radar_ClearRxFlag();      // 清除接收完成标志
+    } else {
+        *length = 0;  // 如果数据未接收完成，返回长度为0
+    }
+}
+

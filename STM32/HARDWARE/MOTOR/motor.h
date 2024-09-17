@@ -3,21 +3,21 @@
 
 #include "pwm.h"
 
-#define MOTOR1_DIR_PIN1 GPIO_Pin_3  // µç»ú1·½Ïò¿ØÖÆÒý½Å1
-#define MOTOR1_DIR_PIN2 GPIO_Pin_4  // µç»ú1·½Ïò¿ØÖÆÒý½Å2
+#define MOTOR1_DIR_PIN1 GPIO_Pin_3  // ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
+#define MOTOR1_DIR_PIN2 GPIO_Pin_4  // ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 
-#define MOTOR2_DIR_PIN1 GPIO_Pin_5  // µç»ú2·½Ïò¿ØÖÆÒý½Å1
-#define MOTOR2_DIR_PIN2 GPIO_Pin_6  // µç»ú2·½Ïò¿ØÖÆÒý½Å2
+#define MOTOR2_DIR_PIN1 GPIO_Pin_5  // ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
+#define MOTOR2_DIR_PIN2 GPIO_Pin_6  // ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 
-#define MOTOR3_DIR_PIN1 GPIO_Pin_7  // µç»ú3·½Ïò¿ØÖÆÒý½Å1
-#define MOTOR3_DIR_PIN2 GPIO_Pin_8  // µç»ú3·½Ïò¿ØÖÆÒý½Å2
+#define MOTOR3_DIR_PIN1 GPIO_Pin_7  // ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
+#define MOTOR3_DIR_PIN2 GPIO_Pin_8  // ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 
-#define MOTOR4_DIR_PIN1 GPIO_Pin_9  // µç»ú4·½Ïò¿ØÖÆÒý½Å1
-#define MOTOR4_DIR_PIN2 GPIO_Pin_10 // µç»ú4·½Ïò¿ØÖÆÒý½Å2
+#define MOTOR4_DIR_PIN1 GPIO_Pin_9  // ï¿½ï¿½ï¿½4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
+#define MOTOR4_DIR_PIN2 GPIO_Pin_10 // ï¿½ï¿½ï¿½4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2
 
 void Car_Init(void);
-void Car_Go_ForWard(void);
-void Car_GO_Back(void);
+void Car_Forward(void);
+void Car_Back(void);
 void Car_Turn_Left(void);
 void Car_Turn_Right(void);
 void Car_Stop(void);

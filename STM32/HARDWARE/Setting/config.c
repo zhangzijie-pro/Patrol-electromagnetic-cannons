@@ -40,3 +40,17 @@ void deal_esp32_return_content(){
 		// pass
 	}
 }
+
+uint8_t target_status; 	   // 目标状态
+uint16_t motion_distance;  // 运动目标距离
+uint8_t motion_energy; 	   // 运动目标能量值
+uint16_t static_distance;  // 静止目标距离
+uint8_t static_energy;     // 静止目标能量值
+uint8_t motion_gate_energy; // 运动距离门能量值
+uint8_t static_gate_energy; // 静止距离门能量值
+uint8_t light_value;
+
+//* 解析LD2412雷达返回数据
+void deal_to_ld2412(uint8_t content){
+	
+}
