@@ -6,7 +6,7 @@
 | 目录名                 | 描述                     |
 |-----------------------|--------------------------|
 | STM32/| [智能小车+雷达+电磁炮充电放电发射](./STM32/readme.md)|
-| ESP32_cam/| [摄像头识别目标与报文解析](./ESP32_cam/guide.txt)|
+| ESP32_cam/| [摄像头识别目标与报文解析](./ESP32_cam/guide.md)|
 
 
 ### [esp32-cam](https://lastminuteengineers.com/getting-started-with-esp32-cam/)

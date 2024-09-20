@@ -1,5 +1,7 @@
 # Esp32-cam Folder Guide
 
+#### 运行esp32-cam代码使用[Arduino](./Ardrino.md)
+
 - data: 存放图像
 - Collect_Images_for_EdgeImpulse: 目前实现收集图像s
 - torch_model: pytorch训练模型,由于训练结果较大并且范围太过于大,暂存备用
@@ -15,3 +17,7 @@
 3: tail: 2字节      (0x01) && (!0x00)
 
 ```
+
+#### 训练模型的简易思路和方式来源于 https://www.youtube.com/watch?v=bZIKVaD3dRk
+#### 使用https://studio.edgeimpulse.com/来训练模型
+#### 训练集来自于网络下载和拍摄内容(70%-30%)
