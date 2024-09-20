@@ -1,12 +1,13 @@
 #ifndef __RADAR_H
 #define __RADAR_H	
 
-#include "stm32f4xx.h"
+#include "stm32f4xx_usart.h"
+#include "stm32f4xx_gpio.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
-#define RADAR_BUFFER_SIZE 100  // 假设数组长度为100
+#define RADAR_BUFFER_MAX_LEN 100  // 假设数组长度为100
 
 // 雷达使能配置和结束配置
 extern uint8_t enable_config_radar[14];
@@ -20,9 +21,9 @@ extern uint8_t read_speed[12];
 extern uint8_t basic_config[17];
 extern uint8_t read_basic_config[12];
 
-// 工作模式使能和结束
-extern uint8_t enable_work_model[12];
-extern uint8_t disable_work_model[12];
+// 工程模式使能和结束
+extern uint8_t enable_engineer_model[12];
+extern uint8_t disable_engineer_model[12];
 
 // 运动灵敏度配置和查询
 extern uint8_t action_ling_config[26];
@@ -47,5 +48,17 @@ extern uint8_t lanya[14];
 // 光感辅助控制配置和查询
 extern uint8_t light_config[13];
 extern uint8_t search_light_config[12];
+
+extern uint8_t radar_Serial_Buffer[RADAR_BUFFER_MAX_LEN];
+extern uint8_t radar_receive_ok_flag;
+extern uint8_t radar_counter;
+
+void radar_usart_init(void);
+void radar_sendbyte(uint8_t Byte);
+void radar_sendArray(uint8_t *Array, uint16_t len);
+void radar_sendString(char *String);
+void radar_prinf(char *format,...);
+
+
 
 #endif

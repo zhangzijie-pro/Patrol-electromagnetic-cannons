@@ -12,7 +12,6 @@
 "..\obj\hc04.o"
 "..\obj\config.o"
 "..\obj\servo.o"
-"..\obj\config_radar.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart_1.o"

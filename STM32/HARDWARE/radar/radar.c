@@ -9,8 +9,8 @@ uint8_t read_speed[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x11,0x00, 0x04, 0x03, 
 uint8_t basic_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x07,0x00,0x02,0x00,0x01,0x0C,0x05,0x00,0x00, 0x04, 0x03, 0x02, 0x01};		// 基础设置	5字节: 一字节最小距离门,一字节最大距离门,两字节无人持续时间,1字节out输出0
 uint8_t read_basic_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x12,0x00, 0x04, 0x03, 0x02, 0x01};												// 读取基础设置
 
-uint8_t enable_work_model[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x62,0x00, 0x04, 0x03, 0x02, 0x01};												// 使能工作模式
-uint8_t disable_work_model[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x63,0x00, 0x04, 0x03, 0x02, 0x01};											// 结束工作模式
+uint8_t enable_engineer_model[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x62,0x00, 0x04, 0x03, 0x02, 0x01};												// 使能工作模式
+uint8_t disable_engineer_model[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x63,0x00, 0x04, 0x03, 0x02, 0x01};											// 结束工作模式
 
 uint8_t action_ling_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x10,0x00,0x03,0x00,0x00,0x23,0x23,0x23,0x19,0x19,0x19,0x19,0x19,0x19,0x19,0x19,0x19,0x19, 0x04, 0x03, 0x02, 0x01};			// 运动灵敏度配置
 uint8_t search_action_ling[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x13,0x00, 0x04, 0x03, 0x02, 0x01};											// 运动灵敏度查询
@@ -30,92 +30,90 @@ uint8_t lanya[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0xA4,0x00,0x01,0x00, 0x04, 0
 uint8_t light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0x0C,0x01,0x50, 0x04, 0x03, 0x02, 0x01};												// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 uint8_t search_light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x1C, 0x04, 0x03, 0x02, 0x01};													// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 
-uint8_t radar_Serial_RxData;
-volatile uint8_t radar_Serial_RxFlag=0;							// 标志位，表示是否接收到完整的数组数据
-uint8_t radar_RxBuffer[RADAR_BUFFER_SIZE];  // 用于存储接收的数组数据
-volatile uint16_t radar_RxIndex = 0;        // 当前接收字节的索引 
+uint8_t radar_Serial_Buffer[RADAR_BUFFER_MAX_LEN];
+uint8_t radar_receive_ok_flag=0;
+uint8_t radar_counter=0;
 
-void radar_init(void)
+void radar_usart_init(void)
 {
-	  // 1. 使能USART3和GPIOC时钟
-    RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+		USART_InitTypeDef USART_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
+		NVIC_InitTypeDef NVIC_InitStructure;
+	
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+	
+		// 配置 GPIO 引脚
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;  // PC10 -> TX
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;  //PC11 -> RX
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-    // 2. 配置PC10 (TX) 和 PC11 (RX) 为复用功能
-		// 设置PC10为复用功能模式
-    GPIOC->MODER &= ~(GPIO_MODER_MODER10);
-    GPIOC->MODER |= (GPIO_MODER_MODER10_1); // 复用模式
-    // 设置PC11为输入模式
-    GPIOC->MODER &= ~(GPIO_MODER_MODER11);
-    GPIOC->MODER |= (GPIO_MODER_MODER11);
-    GPIOC->AFR[1] |= 0x0077; // 设置PC10和PC11为AF7（USART3）
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_USART3);
+	
+	
+		USART_DeInit(USART3);
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+		// 配置 USART3 参数
+    USART_InitStructure.USART_BaudRate = 9600;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+    USART_Init(USART3, &USART_InitStructure);
 
-    // 3. 配置USART3
-    USART3->BRR = (uint16_t)(SystemCoreClock / 9600); // 波特率9600
-    USART3->CR1 |= USART_CR1_TE | USART_CR1_RE; // 使能发送和接收
-    USART3->CR1 |= USART_CR1_RXNEIE; // 使能接收中断
-    USART3->CR1 |= USART_CR1_UE; // 使能USART3
-
-    // 4. 使能USART3中断
-    NVIC_EnableIRQ(USART3_IRQn);
-		NVIC_SetPriority(USART3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 1, 0));
+		// 使能 USART
+    USART_Cmd(USART3, ENABLE);
+		USART_ITConfig(USART3,USART_IT_PE,ENABLE);
+		USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);
+		
+		NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
 }
 
 void radar_IRQHandler(void){
-	if(USART3->SR & USART_SR_RXNE){
-		radar_Serial_RxData = USART3->DR;
-		// 将数据存入缓冲区
-		radar_RxBuffer[radar_RxIndex++] = radar_Serial_RxData;
-
-		// 判断是否接收完成（可以根据特殊字符或长度判断）
-		if (radar_RxIndex >= RADAR_BUFFER_SIZE || radar_Serial_RxData == '\n') {  // 这里假设\n表示结束
-				radar_Serial_RxFlag = 1;   // 设置接收完成标志
-				radar_RxIndex = 0;      // 重置索引，准备接收下一组数据
+		while(USART_GetFlagStatus(USART3,USART_FLAG_RXNE) == 0); 
+		radar_Serial_Buffer[radar_counter++] = USART_ReceiveData(USART3);
+		
+		if(radar_Serial_Buffer[radar_counter-1]=='\n' && radar_Serial_Buffer[radar_counter-2] == '\r')
+		{
+			radar_Serial_Buffer[radar_counter-1]=0;
+			radar_counter=0;
+			radar_receive_ok_flag=1;
 		}
-	}
 }
 
 void radar_sendbyte(uint8_t Byte){
-	while(!(USART3->SR&USART_SR_TXE));
-	USART3->DR = Byte;
+	while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
+	USART_SendData(USART3,Byte);
 }
 
 void radar_sendArray(uint8_t *Array, uint16_t len)
 {
-	for(uint16_t i=0;i<len;i++){
-		radar_sendbyte(Array[i]);
+	char *p = (char *)Array;
+	
+	while(len --){
+		radar_sendbyte(*p);
+		p ++;
 	}
 }
 
 void radar_sendString(char *String)
 {
-	while(*String)
+	while(*String!='\0')
 	{
-		radar_sendbyte(*String++);
+		while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
+		USART_SendData(USART3,*String++);
 	}
-}
-
-uint32_t radar_pow(uint32_t x,uint32_t y)
-{
-	uint32_t result = 1;
-	for(uint32_t i=0;i<y;i++){
-		result*=x;
-	}
-	return result;
-}
-
-void radar_sendNumber(uint32_t Number, uint8_t len)
-{
-	for(int i=len;i>0;i--){
-		uint8_t digit = (Number/radar_pow(10,i-1))%10;
-		radar_sendbyte(digit+'0');
-	}
-}
-
-int radar_fputc1(int ch, FILE *f)
-{
-	radar_sendbyte(ch);
-	return ch;
 }
 
 void radar_prinf(char *format,...){
@@ -126,30 +124,3 @@ void radar_prinf(char *format,...){
 	va_end(arg);
 	radar_sendString(String);
 }
-
-uint8_t radar_GetRxFlag(void)
-{
-	return radar_Serial_RxFlag;
-}
-
-uint8_t radar_GetRxData(void)
-{
-	radar_Serial_RxFlag = 0;
-	return radar_Serial_RxData;
-}
-
-void radar_ClearRxFlag(void) {
-    radar_Serial_RxFlag = 0;
-}
-
-void radar_GetReceivedData(uint8_t* buffer, uint16_t* length) {
-    if (radar_GetRxFlag()) {
-        // 将接收到的数据复制到提供的缓冲区
-        memcpy(buffer, radar_RxBuffer, radar_RxIndex);
-        *length = radar_RxIndex;  // 返回接收到的数组长度
-        radar_ClearRxFlag();      // 清除接收完成标志
-    } else {
-        *length = 0;  // 如果数据未接收完成，返回长度为0
-    }
-}
-
