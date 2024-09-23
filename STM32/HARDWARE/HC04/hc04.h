@@ -16,5 +16,5 @@ void hc_prinf(char *format,...);
 extern uint8_t HC_Serial_Buffer[HC_BUFFER_MAX_LEN];
 extern uint8_t hc_receive_ok_flag;
 extern uint8_t hc_counter;
-
+extern uint8_t hc_data;
 #endif

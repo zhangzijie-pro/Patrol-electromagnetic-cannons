@@ -1,10 +1,12 @@
 #include "hc04.h"
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_gpio.h"
+#include "led.h"
 
 uint8_t HC_Serial_Buffer[HC_BUFFER_MAX_LEN];
 uint8_t hc_receive_ok_flag=0;
 uint8_t hc_counter=0;
+uint8_t hc_data;
 
 void hc_init(void)
 {
@@ -16,15 +18,12 @@ void hc_init(void)
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
     // ÅäÖÃ GPIO Òý½Å
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;  // PA2 -> TX
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;  //PA3 -> RX
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOA,&GPIO_InitStructure);
 
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
@@ -43,7 +42,7 @@ void hc_init(void)
 		
     // Ê¹ÄÜ USART
     USART_Cmd(USART2, ENABLE);
-		USART_ITConfig(USART2,USART_IT_PE,ENABLE);
+		//USART_ITConfig(USART2,USART_IT_PE,ENABLE);
 		USART_ITConfig(USART2,USART_IT_RXNE,ENABLE);
 		
 		NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
@@ -53,17 +52,6 @@ void hc_init(void)
 		NVIC_Init(&NVIC_InitStructure);
 }
 
-void USART2_IRQHandler(void){
-	  while(USART_GetFlagStatus(USART2,USART_FLAG_RXNE) == 0); 
-		HC_Serial_Buffer[hc_counter++] = USART_ReceiveData(USART2);
-		
-		if(HC_Serial_Buffer[hc_counter-1]=='\n' && HC_Serial_Buffer[hc_counter-2] == '\r')
-		{
-			HC_Serial_Buffer[hc_counter-1]=0;
-			hc_counter=0;
-			hc_receive_ok_flag=1;
-		}
-}
 
 void hc_sendbyte(uint8_t Byte){
 	while(!(USART_GetFlagStatus(USART2,USART_FLAG_TC) == 1));

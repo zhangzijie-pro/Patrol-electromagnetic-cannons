@@ -10,6 +10,7 @@
 extern uint8_t esp_Serial_Buffer[ESP_BUFFER_MAX_LEN];
 extern uint8_t esp_receive_ok_flag;
 extern uint8_t esp_counter;
+extern uint8_t esp_data;
 
 void esp_init(void);
 void esp_sendbyte(uint8_t Byte);

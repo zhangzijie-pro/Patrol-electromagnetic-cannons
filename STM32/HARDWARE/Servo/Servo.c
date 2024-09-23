@@ -7,6 +7,6 @@ void Servo_Init(void)
 
 void Servo_Angle(float Angle){
 	
-	PWM_set_compare_2(Angle/180*2000+500);
-
+	uint32_t pulse = 1000 + (Angle * 1000 / 180);  // 根据角度计算脉宽
+	PWM_set_compare_2(pulse);
 }

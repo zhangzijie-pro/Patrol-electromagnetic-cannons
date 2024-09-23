@@ -2,8 +2,9 @@
 #include "stm32f4xx.h"
 
 uint8_t esp_Serial_Buffer[ESP_BUFFER_MAX_LEN];
-uint8_t esp_receive_ok_flag;
-uint8_t esp_counter;
+uint8_t esp_receive_ok_flag=0;
+uint8_t esp_counter=0;
+uint8_t esp_data;
 
 void esp_init(void)
 {
@@ -52,15 +53,11 @@ void esp_init(void)
 		NVIC_Init(&NVIC_InitStructure);
 }
 
-void esp_IRQHandler(void){
-		while(USART_GetFlagStatus(USART3,USART_FLAG_RXNE) == 0); 
-		esp_Serial_Buffer[esp_counter++] = USART_ReceiveData(USART3);
+void USART3_IRQHandler(void){
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET){
+			esp_data = USART_ReceiveData(USART3);
 		
-		if(esp_Serial_Buffer[esp_counter-1]=='\n' && esp_Serial_Buffer[esp_counter-2] == '\r')
-		{
-			esp_Serial_Buffer[esp_counter-1]=0;
-			esp_counter=0;
-			esp_receive_ok_flag=1;
+			esp_prinf("receive :%d\r\n",esp_data-'0');
 		}
 }
 

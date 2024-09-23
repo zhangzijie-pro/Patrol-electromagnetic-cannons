@@ -30,80 +30,99 @@ uint8_t lanya[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0xA4,0x00,0x01,0x00, 0x04, 0
 uint8_t light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x04,0x00,0x0C,0x01,0x50, 0x04, 0x03, 0x02, 0x01};												// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 uint8_t search_light_config[] = {0xFD, 0xFC, 0xFB, 0xFA,0x02,0x00,0x1C, 0x04, 0x03, 0x02, 0x01};													// 光感辅助控制 0x01: 0x00关闭,0x01小于阈值(0x0C:0x00~0xFF),0x02大于阈值
 
-uint8_t radar_Serial_Buffer[RADAR_BUFFER_MAX_LEN];
+//RADAR_BUFFER_MAX_LEN
+uint8_t radar_Serial_Buffer[4];
 uint8_t radar_receive_ok_flag=0;
 uint8_t radar_counter=0;
+uint8_t radar_data;
 
 void radar_usart_init(void)
 {
 		USART_InitTypeDef USART_InitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
+	
+		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 		NVIC_InitTypeDef NVIC_InitStructure;
 	
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	
 		// 配置 GPIO 引脚
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;  // PC10 -> TX
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;  // PA0 -> TX
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
-	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;  //PC11 -> RX
+	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;  //PA1 -> RX
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
-    GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_USART3);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_UART4);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_UART4);
 	
 	
-		USART_DeInit(USART3);
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-		// 配置 USART3 参数
+		USART_DeInit(UART4);
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
+		// 配置 USART4 参数
     USART_InitStructure.USART_BaudRate = 9600;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-    USART_Init(USART3, &USART_InitStructure);
+    USART_Init(UART4, &USART_InitStructure);
 
 		// 使能 USART
-    USART_Cmd(USART3, ENABLE);
-		USART_ITConfig(USART3,USART_IT_PE,ENABLE);
-		USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);
+    USART_Cmd(UART4, ENABLE);
+		USART_ITConfig(UART4,USART_IT_PE,ENABLE);
+		USART_ITConfig(UART4,USART_IT_RXNE,ENABLE);
 		
-		NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 }
 
-void radar_IRQHandler(void){
-		while(USART_GetFlagStatus(USART3,USART_FLAG_RXNE) == 0); 
-		radar_Serial_Buffer[radar_counter++] = USART_ReceiveData(USART3);
-		
-		if(radar_Serial_Buffer[radar_counter-1]=='\n' && radar_Serial_Buffer[radar_counter-2] == '\r')
-		{
-			radar_Serial_Buffer[radar_counter-1]=0;
-			radar_counter=0;
-			radar_receive_ok_flag=1;
+void UART4_IRQHandler(void){
+		static int RxState = 0;
+		if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET){
+			uint8_t radar_data = USART_ReceiveData(UART4);  // 接收数据
+			radar_prinf("receive: %d\r\n",radar_data);
+			if(RxState==0)
+			{
+					if(radar_data==0xFF){
+						radar_counter=0;
+						RxState=1;
+						radar_prinf("RxState=1");
+					}
+			}else if(RxState==1){
+					radar_Serial_Buffer[radar_counter]=radar_data;
+					radar_counter++;
+					if(radar_counter>=4)
+					{
+							RxState=2;
+					}
+			}else if(RxState==2){
+					if(radar_data==0xFE)
+					{
+						RxState=0;
+						radar_receive_ok_flag=1;
+					}
+			}
+			USART_ClearITPendingBit(UART4,USART_IT_RXNE);
 		}
 }
 
 void radar_sendbyte(uint8_t Byte){
-	while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
-	USART_SendData(USART3,Byte);
+	while(!(USART_GetFlagStatus(UART4,USART_FLAG_TC) == 1));
+	USART_SendData(UART4,Byte);
 }
 
 void radar_sendArray(uint8_t *Array, uint16_t len)
 {
-	char *p = (char *)Array;
-	
-	while(len --){
-		radar_sendbyte(*p);
-		p ++;
+	for(uint16_t i=0;i<len;i++){
+		radar_sendbyte(Array[i]);
 	}
 }
 
@@ -111,8 +130,8 @@ void radar_sendString(char *String)
 {
 	while(*String!='\0')
 	{
-		while(!(USART_GetFlagStatus(USART3,USART_FLAG_TC) == 1));
-		USART_SendData(USART3,*String++);
+		while(!(USART_GetFlagStatus(UART4,USART_FLAG_TC) == 1));
+		USART_SendData(UART4,*String++);
 	}
 }
 
@@ -123,4 +142,9 @@ void radar_prinf(char *format,...){
 	vsprintf(String, format, arg);
 	va_end(arg);
 	radar_sendString(String);
+}
+
+int radar_GetFlag(){
+	radar_receive_ok_flag=0;
+	return radar_receive_ok_flag;
 }

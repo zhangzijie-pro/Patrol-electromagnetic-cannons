@@ -49,9 +49,10 @@ extern uint8_t lanya[14];
 extern uint8_t light_config[13];
 extern uint8_t search_light_config[12];
 
-extern uint8_t radar_Serial_Buffer[RADAR_BUFFER_MAX_LEN];
-extern uint8_t radar_receive_ok_flag;
+//RADAR_BUFFER_MAX_LEN
+extern uint8_t radar_Serial_Buffer[4];
 extern uint8_t radar_counter;
+extern uint8_t radar_data;
 
 void radar_usart_init(void);
 void radar_sendbyte(uint8_t Byte);
@@ -59,6 +60,5 @@ void radar_sendArray(uint8_t *Array, uint16_t len);
 void radar_sendString(char *String);
 void radar_prinf(char *format,...);
 
-
-
+int radar_GetFlag();
 #endif

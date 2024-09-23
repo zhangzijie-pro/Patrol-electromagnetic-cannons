@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\FWLIB\inc;..\DSP;..\Middlewares\FreeRTOS\include;..\Middlewares\MALLOC;..\USER;..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3;..\HARDWARE\radar;..\HARDWARE\KEY;..\HARDWARE\PWM;..\HARDWARE\MOTOR;..\HARDWARE\radar;..\HARDWARE\Setting;..\HARDWARE\ESP32_cam;..\HARDWARE\HC04</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\FWLIB\inc;..\DSP;..\Middlewares\FreeRTOS\include;..\Middlewares\MALLOC;..\USER;..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3;..\HARDWARE\radar;..\HARDWARE\KEY;..\HARDWARE\PWM;..\HARDWARE\MOTOR;..\HARDWARE\radar;..\HARDWARE\Setting;..\HARDWARE\ESP32_cam;..\HARDWARE\HC04;..\HARDWARE\Servo;..\HARDWARE\LCD</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -433,11 +433,6 @@
               <FilePath>..\HARDWARE\KEY\key.c</FilePath>
             </File>
             <File>
-              <FileName>esp32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\ESP32_cam\esp32.c</FilePath>
-            </File>
-            <File>
               <FileName>hc04.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\HC04\hc04.c</FilePath>
@@ -448,9 +443,29 @@
               <FilePath>..\HARDWARE\Setting\config.c</FilePath>
             </File>
             <File>
+              <FileName>esp32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\ESP32_cam\esp32.c</FilePath>
+            </File>
+            <File>
               <FileName>Servo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Servo\Servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>other.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\other\other.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\LCD\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\LCD\lcd_init.c</FilePath>
             </File>
           </Files>
         </Group>

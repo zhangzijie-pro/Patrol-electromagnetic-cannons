@@ -3,17 +3,17 @@
 
 #include "pwm.h"
 
-#define MOTOR1_DIR_PIN1 GPIO_Pin_3  // ���1�����������1
-#define MOTOR1_DIR_PIN2 GPIO_Pin_4  // ���1�����������2
+#define MOTOR1_DIR_PIN1 GPIO_Pin_3 
+#define MOTOR1_DIR_PIN2 GPIO_Pin_4 
 
-#define MOTOR2_DIR_PIN1 GPIO_Pin_5  // ���2�����������1
-#define MOTOR2_DIR_PIN2 GPIO_Pin_6  // ���2�����������2
+#define MOTOR2_DIR_PIN1 GPIO_Pin_5
+#define MOTOR2_DIR_PIN2 GPIO_Pin_6
 
-#define MOTOR3_DIR_PIN1 GPIO_Pin_7  // ���3�����������1
-#define MOTOR3_DIR_PIN2 GPIO_Pin_8  // ���3�����������2
+#define MOTOR3_DIR_PIN1 GPIO_Pin_7
+#define MOTOR3_DIR_PIN2 GPIO_Pin_8
 
-#define MOTOR4_DIR_PIN1 GPIO_Pin_9  // ���4�����������1
-#define MOTOR4_DIR_PIN2 GPIO_Pin_10 // ���4�����������2
+#define MOTOR4_DIR_PIN1 GPIO_Pin_9
+#define MOTOR4_DIR_PIN2 GPIO_Pin_10
 
 void Car_Init(void);
 void Car_Forward(void);
