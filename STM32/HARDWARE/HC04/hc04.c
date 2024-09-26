@@ -28,7 +28,7 @@ void hc_init(void)
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 		
-		USART_DeInit(USART2);
+		//USART_DeInit(USART2);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
     // 配置 USART 参数
     USART_InitStructure.USART_BaudRate = 9600;
@@ -42,7 +42,8 @@ void hc_init(void)
 		
     // 使能 USART
     USART_Cmd(USART2, ENABLE);
-		//USART_ITConfig(USART2,USART_IT_PE,ENABLE);
+		USART_ClearFlag(USART2, USART_FLAG_TC);
+		// USART_ITConfig(USART2,USART_IT_IDLE,ENABLE);
 		USART_ITConfig(USART2,USART_IT_RXNE,ENABLE);
 		
 		NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;

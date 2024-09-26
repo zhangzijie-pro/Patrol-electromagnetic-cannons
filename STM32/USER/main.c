@@ -1,41 +1,49 @@
-#include "sys.h"
-#include "delay.h"
-#include "freertos_demo.h"
-#include "led.h"
-#include "key.h"
-#include "pwm.h"
-#include "hc04.h"
-#include "stm32f4xx.h"
-#include "Servo.h"
-#include "lcd.h"
-#include "lcd_init.h"
-#include "pic.h"
-
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-uint8_t buffer[4];
+#include "main.h"
 
 int main(void)
 {
+	uint8_t i = 0;
+	// 外设串口初始化
 	hc_init();
+	esp_init();
+	// 舵机初始化
 	Servo_Init();
-	PWM_initialize();
+	// 小车初始化
+	//PWM_initialize();
+	Car_Init();
+	
+	// LED初始化
 	LED_Init();
 	delay_init(168);
-	hc_prinf("hello,hc");
+	
+	// LCD 初始化
 	LCD_Init();
 	LCD_Fill(0,0,LCD_W,LCD_H,WHITE);
-	PWM_set_compare(100-1);
-	//Servo_Angle(90);
+	
+	esp_prinf("hello,esp\r\n");
+	hc_prinf("hello,hc");
+
+	
+
+	
+	Servo_Angle(0);
 	while(1)
 	{
-		LCD_ShowChar(20,20,1,BLACK,BLACK,12,1);//显示一个字符
+		// LCD显示
+		LCD_ShowChar(20,20,1,WHITE,BLACK,12,1);//显示一个字符
+		
+		// 处理esp32得到数据
+		if(esp_receive_ok_flag){
+			esp_receive_ok_flag=0;
+			i=0;
+			while(esp_counter--){
+				USART_SendData(USART3,esp_Serial_Buffer[i++]);
+				while(USART_GetFlagStatus(USART3,USART_FLAG_TC)==RESET);
+			}
+			esp_counter=0;
+		}
+		
 		// freertos_demo();
-		Servo_Angle(0);    // 设置舵机转到0度
-		delay_ms(1000);
 	}
 }
 
@@ -47,21 +55,23 @@ void USART2_IRQHandler(void){
 			
 			if(hc_data == '1'){			// receive 49-'0'
 				LED1=0;
-				PWM_set_compare(25-1);
+				PWM_set_compare(400-1);
 				Servo_Angle(90);
 			}
 			else if(hc_data=='0'){
 				LED1=1;
-				PWM_set_compare(50-1);
+				PWM_set_compare(500-1);
+				Servo_Angle(45);
+			}
+			else if(hc_data=='2'){
+				LED2=1;
+				PWM_set_compare(600-1);
+				Servo_Angle(135);
+			}
+				else if(hc_data=='3'){
+				LED2=0;
+				PWM_set_compare(800-1);
 				Servo_Angle(180);
 			}
-//			HC_Serial_Buffer[hc_counter++] = USART_Receive_data(USART2);
-//			
-//			if(HC_Serial_Buffer[hc_counter-1]=='\n' && HC_Serial_Buffer[hc_counter-2] == '\r')
-//			{
-//				HC_Serial_Buffer[hc_counter-1]=0;
-//				hc_counter=0;
-//				hc_receive_ok_flag=1;
-//			}
 		}
 }

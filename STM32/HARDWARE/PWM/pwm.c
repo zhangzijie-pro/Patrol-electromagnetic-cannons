@@ -24,9 +24,9 @@ int PWM_initialize(void)
 	
 	
 	//TIM4初始化
-	TIM_TimeBaseStructure.TIM_Prescaler = 1680-1;                                 //设置预分频值PSC 1680
+	TIM_TimeBaseStructure.TIM_Prescaler = 5-1;                                 //设置预分频值PSC 1680
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;               //向上计数模式
-	TIM_TimeBaseStructure.TIM_Period = 100-1;                                   //自动重装载值 ARR
+	TIM_TimeBaseStructure.TIM_Period = 840-1;                                   //自动重装载值 ARR
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;                   //设置时钟分割 
 	TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
 	
@@ -92,11 +92,11 @@ void PWM_init_2(void)
 	GPIO_Init(GPIOC,&GPIO_InitStruct);
 	
 	
-	// 84MHz /84/20000 = 50Hz = 20ms
+	// 84MHz /8400/200 = 50Hz = 20ms
 	TIM_TimBaseStruct.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimBaseStruct.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimBaseStruct.TIM_Period = 20000-1;		// ARR
-	TIM_TimBaseStruct.TIM_Prescaler = 84 - 1;		// PSC
+	TIM_TimBaseStruct.TIM_Period = 200-1;		// ARR
+	TIM_TimBaseStruct.TIM_Prescaler = 8400 - 1;		// PSC
 	TIM_TimBaseStruct.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM3,&TIM_TimBaseStruct);
 	
@@ -106,7 +106,7 @@ void PWM_init_2(void)
 	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
 	
 	TIM_OC1Init(TIM3,&TIM_OCInitStruct);
-	//TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);  
+	TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable); 
 	
 	//TIM_ARRPreloadConfig(TIM3,ENABLE);                                        //使能TIM4在ARR上的预装载寄存器
 	TIM_Cmd(TIM3, ENABLE);                                                    //TIM4使能
@@ -119,6 +119,7 @@ void PWM_set_compare_2(int value)
 {
 	TIM_SetCompare1(TIM3,value);
 }
+
 
 // 频率 = CLK/ (PSC+1)/(ARR+1)
 // 占空比=CCR/(ARR+1)

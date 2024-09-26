@@ -43,8 +43,10 @@ void esp_init(void)
 
 		// Ê¹ÄÜ USART
     USART_Cmd(USART3, ENABLE);
-		USART_ITConfig(USART3,USART_IT_PE,ENABLE);
+		USART_ClearFlag(USART2, USART_FLAG_TC);
+		//USART_ITConfig(USART3,USART_IT_PE,ENABLE);
 		USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);
+		USART_ITConfig(USART3,USART_IT_IDLE,ENABLE);
 		
 		NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
@@ -54,10 +56,15 @@ void esp_init(void)
 }
 
 void USART3_IRQHandler(void){
+	uint8_t Clear = Clear;	
 	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET){
-			esp_data = USART_ReceiveData(USART3);
-		
-			esp_prinf("receive :%d\r\n",esp_data-'0');
+			//esp_data = USART_ReceiveData(USART3);
+			esp_Serial_Buffer[esp_counter++]=USART3->DR;
+			//esp_prinf("receive :%d\r\n",esp_data-'0');
+		}else if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET){
+			Clear = USART3->SR;
+			Clear = USART3->DR;
+			esp_receive_ok_flag=1;
 		}
 }
 

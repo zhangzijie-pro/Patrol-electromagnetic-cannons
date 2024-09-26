@@ -51,7 +51,7 @@ void radar_init_config(void){
 	radar_sendArray(enable_config_radar,14);
 	
 	// 设置分辨率   	0:75cm  --  1:50cm -- 3:25cm
-	radar_speed[10]=0x01;
+	//radar_speed[4]=0x01;
 	
 	radar_sendArray(radar_speed,22);
 	// 读取分辨率

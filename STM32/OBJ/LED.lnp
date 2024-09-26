@@ -12,7 +12,6 @@
 "..\obj\config.o"
 "..\obj\esp32.o"
 "..\obj\servo.o"
-"..\obj\other.o"
 "..\obj\lcd.o"
 "..\obj\lcd_init.o"
 "..\obj\delay.o"
