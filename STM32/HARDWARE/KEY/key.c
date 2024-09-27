@@ -4,7 +4,6 @@
 //按键初始化函数
 void KEY_Init(void)
 {
-	
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB, ENABLE);//使能GPIOA,GPIOB时钟

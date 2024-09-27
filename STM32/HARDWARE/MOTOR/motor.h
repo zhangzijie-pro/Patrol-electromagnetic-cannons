@@ -4,17 +4,18 @@
 #include "pwm.h"
 
 // GPIOF
-#define MOTOR1_DIR_PIN1 GPIO_Pin_0
-#define MOTOR1_DIR_PIN2 GPIO_Pin_1
+#define MOTOR1_DIR_PIN1 PEout(0)
+#define MOTOR1_DIR_PIN2 PEout(1)
 
-#define MOTOR2_DIR_PIN1 GPIO_Pin_2
-#define MOTOR2_DIR_PIN2 GPIO_Pin_3
 
-#define MOTOR3_DIR_PIN1 GPIO_Pin_4
-#define MOTOR3_DIR_PIN2 GPIO_Pin_5
+#define MOTOR2_DIR_PIN1 PEout(2)
+#define MOTOR2_DIR_PIN2 PEout(3)
 
-#define MOTOR4_DIR_PIN1 GPIO_Pin_6
-#define MOTOR4_DIR_PIN2 GPIO_Pin_7
+#define MOTOR3_DIR_PIN1 PFout(0)
+#define MOTOR3_DIR_PIN2 PFout(1)
+
+#define MOTOR4_DIR_PIN1 PFout(2)
+#define MOTOR4_DIR_PIN2 PFout(3)
 
 void Car_Init(void);
 void Car_Forward(void);

@@ -4,5 +4,6 @@
 #include "pwm.h"
 
 void Servo_Init(void);
-void Servo_Angle(float Angle);
+void Servo_Angle_up(float Angle);
+void Servo_Angle_down(float Angle);
 #endif

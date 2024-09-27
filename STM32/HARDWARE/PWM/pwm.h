@@ -3,10 +3,11 @@
 #include "sys.h"
 #include "stm32f4xx.h"
 
-int PWM_initialize(void);
+int PWM_init(void);
 void PWM_set_compare(int temp);
 
-void PWM_init_2(void);
-void PWM_set_compare_2(int value);
+void PWM_init_servo(void);
+void PWM_set_up(int value);
+void PWM_set_down(int value);
 
 #endif

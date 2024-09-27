@@ -3,35 +3,26 @@
 int main(void)
 {
 	uint8_t i = 0;
+	
 	// 外设串口初始化
 	hc_init();
 	esp_init();
+	
 	// 舵机初始化
 	Servo_Init();
+	
 	// 小车初始化
-	//PWM_initialize();
 	Car_Init();
 	
 	// LED初始化
 	LED_Init();
 	delay_init(168);
 	
-	// LCD 初始化
-	LCD_Init();
-	LCD_Fill(0,0,LCD_W,LCD_H,WHITE);
-	
 	esp_prinf("hello,esp\r\n");
-	hc_prinf("hello,hc");
+	hc_prinf("hello,hc\r\n");
 
-	
-
-	
-	Servo_Angle(0);
 	while(1)
 	{
-		// LCD显示
-		LCD_ShowChar(20,20,1,WHITE,BLACK,12,1);//显示一个字符
-		
 		// 处理esp32得到数据
 		if(esp_receive_ok_flag){
 			esp_receive_ok_flag=0;
@@ -55,23 +46,27 @@ void USART2_IRQHandler(void){
 			
 			if(hc_data == '1'){			// receive 49-'0'
 				LED1=0;
-				PWM_set_compare(400-1);
-				Servo_Angle(90);
+				Servo_Angle_up(90);
+				Servo_Angle_down(90);
 			}
 			else if(hc_data=='0'){
 				LED1=1;
-				PWM_set_compare(500-1);
-				Servo_Angle(45);
+				Servo_Angle_up(45);
+				Servo_Angle_down(45);
 			}
 			else if(hc_data=='2'){
 				LED2=1;
-				PWM_set_compare(600-1);
-				Servo_Angle(135);
+				Servo_Angle_up(135);
+				Servo_Angle_down(135);
 			}
-				else if(hc_data=='3'){
+			else if(hc_data=='3'){
 				LED2=0;
-				PWM_set_compare(800-1);
-				Servo_Angle(180);
+				Servo_Angle_up(180);
+				Servo_Angle_down(180);
+			}
+			else if(hc_data=='4'){
+				Servo_Angle_up(0);
+				Servo_Angle_down(0);
 			}
 		}
 }

@@ -1,6 +1,6 @@
 #include "pwm.h"
 
-int PWM_initialize(void)
+int PWM_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -24,7 +24,7 @@ int PWM_initialize(void)
 	
 	
 	//TIM4初始化
-	TIM_TimeBaseStructure.TIM_Prescaler = 5-1;                                 //设置预分频值PSC 1680
+	TIM_TimeBaseStructure.TIM_Prescaler = 1-1;                                 //设置预分频值PSC 1680
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;               //向上计数模式
 	TIM_TimeBaseStructure.TIM_Period = 840-1;                                   //自动重装载值 ARR
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;                   //设置时钟分割 
@@ -33,11 +33,12 @@ int PWM_initialize(void)
 	TIM_TimeBaseInit(TIM4,&TIM_TimeBaseStructure);
 	 
   TIM_OCStructInit(&TIM_OCInitStructure); 																  //初始化结构体
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;                         //设置模式为PWM
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;                         //设置模式为PWM
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;             //比较输出使能
 	TIM_OCInitStructure.TIM_Pulse = 0;     // CRR                                   //设置待装入捕获比较寄存器的脉冲值
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;                  //当定时器的值小于脉冲值时，输出低电平
 	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+	
 	
 	// 通道1
 	TIM_OC1Init(TIM4, &TIM_OCInitStructure);
@@ -58,7 +59,7 @@ int PWM_initialize(void)
 	TIM_ARRPreloadConfig(TIM4,ENABLE);                                        //使能TIM4在ARR上的预装载寄存器
 	TIM_Cmd(TIM4, ENABLE);                                                    //TIM4使能
 	
-	//TIM_CtrlPWMOutputs(TIM4, ENABLE);                                         //使能主输出
+	TIM_CtrlPWMOutputs(TIM4, ENABLE);                                         //使能主输出
 	
 	return 0;
 }
@@ -72,7 +73,7 @@ void PWM_set_compare(int temp)
 	TIM_SetCompare4(TIM4,temp);
 }
 
-void PWM_init_2(void)
+void PWM_init_servo(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	TIM_TimeBaseInitTypeDef TIM_TimBaseStruct;
@@ -83,10 +84,11 @@ void PWM_init_2(void)
 	
 	
 	GPIO_PinAFConfig(GPIOC,GPIO_PinSource6,GPIO_AF_TIM3);                     //PC6复用为TIM3
+	GPIO_PinAFConfig(GPIOC,GPIO_PinSource7,GPIO_AF_TIM3);   
 	
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_7;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC,&GPIO_InitStruct);
@@ -108,6 +110,9 @@ void PWM_init_2(void)
 	TIM_OC1Init(TIM3,&TIM_OCInitStruct);
 	TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable); 
 	
+	TIM_OC2Init(TIM3, &TIM_OCInitStruct);
+	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+	
 	//TIM_ARRPreloadConfig(TIM3,ENABLE);                                        //使能TIM4在ARR上的预装载寄存器
 	TIM_Cmd(TIM3, ENABLE);                                                    //TIM4使能
 	
@@ -115,11 +120,15 @@ void PWM_init_2(void)
 }
 
 
-void PWM_set_compare_2(int value)
+void PWM_set_up(int value)
 {
 	TIM_SetCompare1(TIM3,value);
 }
 
+void PWM_set_down(int value)
+{
+	TIM_SetCompare2(TIM3,value);
+}
 
 // 频率 = CLK/ (PSC+1)/(ARR+1)
 // 占空比=CCR/(ARR+1)
