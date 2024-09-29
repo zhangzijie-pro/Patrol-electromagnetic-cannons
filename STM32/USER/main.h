@@ -25,6 +25,7 @@
 #include "hc04.h"
 #include "radar.h"
 
+#include "config.h"
 
 // std lib 
 #include "stm32f4xx.h"
