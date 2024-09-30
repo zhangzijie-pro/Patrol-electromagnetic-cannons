@@ -19,7 +19,7 @@
 - 通过串口进行自获取
 - [LD2412 pdf](./img/LD2412.pdf)
 - 由于雷达只可以探测人体距离，因此我们采用下图方式获取目标角度，[模拟图像](./ESP32_cam/radar.py)与[伪代码逻辑](./ESP32_cam/get_angle_for_servo.py)
-- ![picture](./img/Figure_1.png)
+- ![picture](./img/radar_get_angle.png)
 
 ### 蓝牙部分 HC-04
 - 蓝牙部分通过usart通信与stm32f4相连
