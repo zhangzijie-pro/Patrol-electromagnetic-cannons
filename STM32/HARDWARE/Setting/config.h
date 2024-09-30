@@ -61,16 +61,14 @@ extern const uint8_t radar_tail[4];			// 数据尾
 
 
 extern uint32_t esp32_return_data[6];
-extern uint8_t target_status; 	   // 目标状态
-extern uint16_t motion_distance;  // 运动目标距离
-extern uint8_t motion_energy; 	   // 运动目标能量值
-extern uint16_t static_distance;  // 静止目标距离
-extern uint8_t static_energy;     // 静止目标能量值
-extern uint8_t motion_gate_energy; // 运动距离门能量值
-extern uint8_t static_gate_energy; // 静止距离门能量值
-extern uint8_t light_value;
-extern uint8_t engineer_state;
 
+extern uint8_t target_status; 	   // 目标状态
+extern uint8_t motion_distance;  // 运动目标距离
+extern uint8_t motion_energy; 	   // 运动目标能量值
+extern uint8_t static_distance;  // 静止目标距离
+extern uint8_t static_energy;     // 静止目标能量值
+extern uint8_t movingTargetZone;
+extern uint8_t stationaryTargetZone;
 
 // esp32 content
 void deal_to_esp32_content(uint32_t *content);
@@ -84,6 +82,6 @@ void radar_disable_config();
 void restart_radar();
 void start_engineer();
 void new_radar();
-void deal_to_ld2412(uint8_t *content);
+void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetDistance, uint8_t *movingTargetZone, uint8_t *stationaryTargetDistance, uint8_t *stationaryTargetZone);
 
 #endif

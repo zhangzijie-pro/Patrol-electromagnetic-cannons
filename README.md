@@ -16,8 +16,10 @@
 - 简易的识别目标的课程指南可参考: https://www.youtube.com/watch?v=bZIKVaD3dRk 或者 https://circuitdigest.com/microcontroller-projects/object-recognition-using-esp32-cam-and-edge-impulse
 
 ### 雷达模块 LD2412
-- 通过串口进行自定义串口通信内容来实现不同内容
+- 通过串口进行自获取
 - [LD2412 pdf](./img/LD2412.pdf)
+- 由于雷达只可以探测人体距离，因此我们采用下图方式获取目标角度，[模拟图像](./ESP32_cam/radar.py)与[伪代码逻辑](./ESP32_cam/get_angle_for_servo.py)
+- ![picture](./img/Figure_1.png)
 
 ### 蓝牙部分 HC-04
 - 蓝牙部分通过usart通信与stm32f4相连

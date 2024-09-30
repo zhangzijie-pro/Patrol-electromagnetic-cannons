@@ -1,5 +1,6 @@
 #include "Servo.h"
 
+// C6  C7
 void Servo_Init(void)
 {
 	PWM_init_servo();

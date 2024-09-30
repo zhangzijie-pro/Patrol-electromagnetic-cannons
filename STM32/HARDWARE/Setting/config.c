@@ -1,7 +1,9 @@
 #include "config.h"
 #include "radar.h"
+#include "delay.h"
 
 // header(4)-len(2)-data(...)-tail(4)
+#define DISTANCE_STEP_CM 50
 
 const uint8_t radar_two_bit_len[2]={0x02,0x00};
 const uint8_t radar_four_bit_len[2]={0x04,0x00};
@@ -124,7 +126,7 @@ void radar_setting(uint8_t bit, const uint8_t *msg){
 			break;
 	}
 }
-uint8_t enable_config=1;
+uint8_t enable_config=0;
 uint8_t engineer_state=0;
 
 void radar_enable_config(){
@@ -139,9 +141,17 @@ void radar_disable_config(){
 
 }
 
-void new_radar(){
+void radar_init_config(void){
 	radar_enable_config();
-	radar_setting(2,new_out);
+	
+	// 设置分辨率   	0:75cm  --  1:50cm -- 3:25cm
+	//radar_speed[4]=0x01;
+	radar_setting(8,radar_speed);
+	
+	// 设置运动和静止的灵敏度
+	radar_setting(16,action_ling_config);
+	radar_setting(16,static_ling_config);
+	
 	radar_disable_config();
 }
 
@@ -155,45 +165,70 @@ void restart_radar(){
 // 开启工程模式
 void start_engineer(){
 	radar_enable_config();
+	delay_ms(1000);
 	radar_setting(2,enable_engineer_model);
 	engineer_state=1;
+	delay_ms(1000);
 	radar_disable_config();
 }
 
 
 uint8_t target_status; 	   // 目标状态
-uint16_t motion_distance;  // 运动目标距离
+uint8_t motion_distance;  // 运动目标距离
 uint8_t motion_energy; 	   // 运动目标能量值
-uint16_t static_distance;  // 静止目标距离
+uint8_t static_distance;  // 静止目标距离
 uint8_t static_energy;     // 静止目标能量值
-uint8_t motion_gate_energy; // 运动距离门能量值
-uint8_t static_gate_energy; // 静止距离门能量值
-uint8_t light_value;
+uint8_t movingTargetZone;
+uint8_t stationaryTargetZone;
 
-//* 解析LD2412雷达返回数据(工程模式数据)
-void deal_to_ld2412(uint8_t *content){
-	if(content[0]==0xF4&&content[1]==0xF3&&content[2]==0xF2&&content[3]==0xF1)
-	{
-		uint8_t data_type = content[4]; // 数据类型
-		if(data_type==0x01)
-		{
-			target_status = content[6];		
-			// 0x00: 无目标 , 0x01: 运动目标 , 0x02: 静止目标 , 0x03: 运动&静止目标
-			motion_distance = (content[7]<<8)|content[8];
-			motion_energy = content[9];
-			static_distance = (content[10]<<8)|content[11];
-			static_energy = content[12];
+
+//* 解析LD2412雷达返回数据(工作  工程模式数据)
+//  0B 00 02 AA 02 51 00 00 00 00 3B 55 00  工作 
+//  2B 00 01 AA 02 00 00 00 64 00 64 0D 0D 00 00 00 00 00 00 00 00 01 01 01 01 00 00 00 64 64 64 13 64 64 64 64 5F 08 02 02 05 4C 00 55 00 工程模式
+void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetDistance, uint8_t *movingTargetZone, uint8_t *stationaryTargetDistance, uint8_t *stationaryTargetZone){
+		*target_status = data[4];
+		if(data[2]==0x02&&engineer_state==0){
+			   // 运动目标距离（第8、9字节，小端格式）
+				*movingTargetDistance = (data[6] << 8) | data[5];
+
+				// 静止目标距离（第12、13字节，小端格式）
+				*stationaryTargetDistance = (data[8] << 8) | data[7];
+
+				// 根据距离计算运动目标在哪个区间
+				if (*movingTargetDistance > 0) {
+						*movingTargetZone = (*movingTargetDistance + DISTANCE_STEP_CM - 1) / DISTANCE_STEP_CM; // 区间从1开始
+				} else {
+						*movingTargetZone = 0; // 没有运动目标
+				}
+
+				// 根据距离计算静止目标在哪个区间
+				if (*stationaryTargetDistance > 0) {
+						*stationaryTargetZone = (*stationaryTargetDistance + DISTANCE_STEP_CM - 1) / DISTANCE_STEP_CM; // 区间从1开始
+				} else {
+						*stationaryTargetZone = 0; // 没有静止目标
+				}
+		}else if(data[2]==0x01&&engineer_state==1){
+				*movingTargetDistance = (data[7] << 8) | data[8];
+
+					// 静止目标距离（第8、9字节，小端格式）
+				*stationaryTargetDistance = (data[11] << 8) | data[10];
 			
-			int index = 13;
-        while(index < 27) { // 假设有14个距离门		10m
-            motion_gate_energy = content[index];
-            static_gate_energy = content[index + 1];
-            index += 2;
-            // 处理每个距离门的能量值
-						// 更新在雷达图上显示
-				}  
-      // 读取光感测量值
-      light_value = content[27];  // 光感测量值
+					// 根据距离计算运动目标在哪个区间
+				if (*movingTargetDistance > 0) {
+						*movingTargetZone = (*movingTargetDistance + DISTANCE_STEP_CM - 1) / DISTANCE_STEP_CM; // 区间从1开始
+				} else {
+						*movingTargetZone = 0; // 没有运动目标
+				}
+
+				// 根据距离计算静止目标在哪个区间
+				if (*stationaryTargetDistance > 0) {
+						*stationaryTargetZone = (*stationaryTargetDistance + DISTANCE_STEP_CM - 1) / DISTANCE_STEP_CM; // 区间从1开始
+				} else {
+						*stationaryTargetZone = 0; // 没有静止目标
+				}
+		}else{
+			engineer_state=!engineer_state;
 		}
-	}
 }
+
+

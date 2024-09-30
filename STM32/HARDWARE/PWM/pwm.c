@@ -18,7 +18,7 @@ int PWM_init(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;                              //模式设为复用
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;                            //复用推挽输出
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;                            //复用推挽输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(GPIOB,&GPIO_InitStructure);
 	
