@@ -3,7 +3,12 @@
 #include "delay.h"
 
 // header(4)-len(2)-data(...)-tail(4)
-#define DISTANCE_STEP_CM 50
+// 单位都是cm
+#define DISTANCE_STEP_CM 50		// 门距离
+#define XL_POS  5
+#define XR_POS -5
+#define M_PI 3.14159265358979323846
+
 
 const uint8_t radar_two_bit_len[2]={0x02,0x00};
 const uint8_t radar_four_bit_len[2]={0x04,0x00};
@@ -45,8 +50,13 @@ const uint8_t search_light_config[2] = {0x1C,0x00};													// 光感辅助控制 
 const uint8_t radar_header[4] = {0xFD, 0xFC, 0xFB, 0xFA};		// 数据头
 const uint8_t radar_tail[4] = {0x04, 0x03, 0x02, 0x01};			// 数据尾
 
-//* 解析报文 
-//* 1.esp32-cam -> stm32f4: Usart		9字节报文 -> 6字节data
+
+/***************************************************************************
+     
+											esp32解析报文 
+			1.esp32-cam -> stm32f4: Usart		9字节报文 -> 6字节data
+
+***************************************************************************/
 uint32_t esp32_return_data[6];
 
 void deal_to_esp32_content(uint32_t *content)
@@ -91,6 +101,7 @@ void deal_esp32_return_content(){
 			雷达配置内容
 
 ************************/
+
 // 配置雷达信息
 void radar_setting(uint8_t bit, const uint8_t *msg){
 	switch(bit){
@@ -178,8 +189,8 @@ uint8_t motion_distance;  // 运动目标距离
 uint8_t motion_energy; 	   // 运动目标能量值
 uint8_t static_distance;  // 静止目标距离
 uint8_t static_energy;     // 静止目标能量值
-uint8_t movingTargetZone;
-uint8_t stationaryTargetZone;
+uint8_t movingTargetZone=0;
+uint8_t stationaryTargetZone=0;
 
 
 //* 解析LD2412雷达返回数据(工作  工程模式数据)
@@ -187,7 +198,7 @@ uint8_t stationaryTargetZone;
 //  2B 00 01 AA 02 00 00 00 64 00 64 0D 0D 00 00 00 00 00 00 00 00 01 01 01 01 00 00 00 64 64 64 13 64 64 64 64 5F 08 02 02 05 4C 00 55 00 工程模式
 void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetDistance, uint8_t *movingTargetZone, uint8_t *stationaryTargetDistance, uint8_t *stationaryTargetZone){
 		*target_status = data[4];
-		if(data[2]==0x02&&engineer_state==0){
+		if(data[0]==0x2B){
 			   // 运动目标距离（第8、9字节，小端格式）
 				*movingTargetDistance = (data[6] << 8) | data[5];
 
@@ -207,7 +218,7 @@ void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetD
 				} else {
 						*stationaryTargetZone = 0; // 没有静止目标
 				}
-		}else if(data[2]==0x01&&engineer_state==1){
+		}else if(data[0]==0x0B){
 				*movingTargetDistance = (data[7] << 8) | data[8];
 
 					// 静止目标距离（第8、9字节，小端格式）
@@ -226,9 +237,61 @@ void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetD
 				} else {
 						*stationaryTargetZone = 0; // 没有静止目标
 				}
-		}else{
-			engineer_state=!engineer_state;
 		}
 }
+
+// 检测区间 1~13
+uint8_t Detection_interval(){
+	if((movingTargetZone==0)&&(stationaryTargetZone==0)){
+		return 0;
+	}else if((movingTargetZone!=0)&&(stationaryTargetZone==0))
+	{
+		return movingTargetZone;
+	}else if((movingTargetZone==0)&&(stationaryTargetZone!=0))
+	{
+		return stationaryTargetZone;
+	}else if((movingTargetZone!=0)&&(stationaryTargetZone!=0))
+	{
+		return (movingTargetZone+stationaryTargetZone)/2;
+	}
+}
+
+/*************************
+     
+			计算目标角度
+
+************************/
+
+// (x-x1)^2+y^2=r1^2  	(x-x2)^2+y^2=r2^2
+// x1: (XL_POS,0)   x2: (XR_POS,0)
+// r1 = LEFT_Zone*DISTANCE_STEP_CM;	r2 = RIGHT_Zone*DISTANCE_STEP_CM
+uint8_t quadrant;		// 象限
+
+double Get_Angle_from_radar(){
+	// 左边传感器距离
+	uint8_t left_interval = Detection_interval();
+	// 右边传感器距离
+	// need change
+	uint8_t right_interval = 4;
+	double r1 = left_interval*DISTANCE_STEP_CM;
+	double r2 = right_interval*DISTANCE_STEP_CM;
+	double x1 = XL_POS, x2 = XR_POS;
+	double c = r1 * r1 - r2 * r2 - x1 * x1 + x2 * x2;
+	
+	// 解出 x
+	double x = (c) / (2 * (x2 - x1));
+
+	if(x>0) quadrant=1; else quadrant=2;
+	double y = sqrt(r1 * r1 - (x - x1) * (x - x1));
+	
+  double tan_value = fabs(x/y);	//得到角度夹角的值
+  double angle = atan(tan_value) * (180.0 / M_PI);
+	
+	if(quadrant==1) angle = angle+90;
+	else if(quadrant==2) angle = 90-angle;
+	
+	return angle;
+}
+
 
 

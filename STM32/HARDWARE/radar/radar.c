@@ -18,8 +18,12 @@ uint8_t radar_counter;
 uint8_t data_len;
 
 void Get_data_len(){
-	if(engineer_state) data_len=(0x00<<8|0x2B)+2;
-	else data_len=(0x00<<8|0x0B)+2;
+//	if(engineer_state) data_len=(0x00<<8|0x2B)+2;
+//	else data_len=(0x00<<8|0x0B)+2;
+	data_len = (0x00<<8|0x0B)+2;
+	if(radar_Serial_Buffer[0]==0x2B){
+		data_len = (0x00<<8|0x2B)+2;
+	}
 }
 
 void radar_usart_init(void)

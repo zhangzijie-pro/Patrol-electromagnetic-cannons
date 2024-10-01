@@ -2,6 +2,13 @@
 
 void return_target_state(void);
 
+/***************************************************************************************************
+     
+					GET_ANGLE -> Servo -> Send esp32 -> start_esp32 -> return content
+
+***************************************************************************************************/
+
+
 int main(void)
 {
 	uint8_t i = 0;
@@ -24,8 +31,8 @@ int main(void)
 	esp_prinf("hello,esp\r\n");
 	hc_prinf("hello,hc\r\n");
 	Car_Set_Speed(1000);
-	//start_engineer();.
-	//esp_prinf("engineer model: %d\r\n",engineer_state);
+	//start_engineer();
+//	esp_prinf("engineer model: %d\r\n",engineer_state);
 	while(1)
 	{
 		Get_data_len();
@@ -33,6 +40,7 @@ int main(void)
 			radar_receive_ok_flag=0;
 			esp_prinf("%x\r\n",radar_Serial_Buffer[0]);
 			esp_prinf("%x\r\n",radar_Serial_Buffer[1]);
+			//esp_prinf("%x\r\n",radar_Serial_Buffer[2]);
 //			esp_prinf("运动目标距离:%d\r\n",(radar_Serial_Buffer[6] << 8) | radar_Serial_Buffer[5]);
 //			esp_prinf("静止目标距离:%d\r\n",(radar_Serial_Buffer[8] << 8) | radar_Serial_Buffer[7]);
 			

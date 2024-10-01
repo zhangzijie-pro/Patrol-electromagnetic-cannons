@@ -1,5 +1,5 @@
 Dependencies for Project 'LED', Target 'LED': (DO NOT MODIFY !)
-F (.\main.c)(0x66FA5C41)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x66FBD9D8)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
 I (main.h)(0x66F75752)
 I (..\SYSTEM\sys\sys.h)(0x5710F356)
 I (..\USER\stm32f4xx.h)(0x5710F357)
@@ -53,7 +53,8 @@ I (..\HARDWARE\HC04\hc04.h)(0x66EE946E)
 I (..\HARDWARE\radar\radar.h)(0x66F8B9EA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599ECD2C)
-I (..\HARDWARE\Setting\config.h)(0x66FA0A55)
+I (..\HARDWARE\Setting\config.h)(0x66FBDE88)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599ECD2E)
 I (C:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x599ECD2E)
 F (.\stm32f4xx_it.c)(0x66D8351D)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\stm32f4xx_it.o --omf_browse ..\obj\stm32f4xx_it.crf --depend ..\obj\stm32f4xx_it.d)
 I (stm32f4xx_it.h)(0x5710F357)
@@ -289,7 +290,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (..\HARDWARE\radar\radar.c)(0x66FA0839)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\radar.o --omf_browse ..\obj\radar.crf --depend ..\obj\radar.d)
+F (..\HARDWARE\radar\radar.c)(0x66FBD9D1)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\radar.o --omf_browse ..\obj\radar.crf --depend ..\obj\radar.d)
 I (..\HARDWARE\radar\radar.h)(0x66F8B9EA)
 I (..\FWLIB\inc\stm32f4xx_usart.h)(0x61F7A884)
 I (..\USER\stm32f4xx.h)(0x5710F357)
@@ -329,7 +330,8 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599ECD2C)
-I (..\HARDWARE\Setting\config.h)(0x66FA0A55)
+I (..\HARDWARE\Setting\config.h)(0x66FBDE88)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599ECD2E)
 F (..\HARDWARE\KEY\key.c)(0x66F56826)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
 I (..\HARDWARE\KEY\key.h)(0x66E64774)
 I (..\SYSTEM\sys\sys.h)(0x5710F356)
@@ -408,8 +410,8 @@ I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
 I (..\HARDWARE\LED\led.h)(0x66EE347E)
 I (..\SYSTEM\sys\sys.h)(0x5710F356)
-F (..\HARDWARE\Setting\config.c)(0x66FA5B7F)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\config.o --omf_browse ..\obj\config.crf --depend ..\obj\config.d)
-I (..\HARDWARE\Setting\config.h)(0x66FA0A55)
+F (..\HARDWARE\Setting\config.c)(0x66FBE156)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -W -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\FWLIB\inc -I ..\DSP -I ..\Middlewares\FreeRTOS\include -I ..\Middlewares\MALLOC -I ..\USER -I ..\Middlewares\FreeRTOS\portable\RVDS\ARM_CM3 -I ..\HARDWARE\radar -I ..\HARDWARE\KEY -I ..\HARDWARE\PWM -I ..\HARDWARE\MOTOR -I ..\HARDWARE\radar -I ..\HARDWARE\Setting -I ..\HARDWARE\ESP32_cam -I ..\HARDWARE\HC04 -I ..\HARDWARE\Servo -I ..\HARDWARE\LCD-I.\RTE\_LED-IC:\Users\lenovo\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\config.o --omf_browse ..\obj\config.crf --depend ..\obj\config.d)
+I (..\HARDWARE\Setting\config.h)(0x66FBDE88)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (..\FWLIB\inc\stm32f4xx_tim.h)(0x61F25A3E)
@@ -446,6 +448,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599ECD2E)
 I (..\HARDWARE\radar\radar.h)(0x66F8B9EA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
