@@ -5,6 +5,9 @@
 #include "string.h"
 #include "stm32f4xx_tim.h"
 #include "math.h"
+#include "radar.h"
+#include "delay.h"
+#include "esp32.h"
 
 extern uint8_t enable_config;
 extern uint8_t engineer_state;
@@ -61,8 +64,6 @@ extern const uint8_t radar_header[4];		// 数据头
 extern const uint8_t radar_tail[4];			// 数据尾
 
 
-extern uint32_t esp32_return_data[6];
-
 extern uint8_t target_status; 	   // 目标状态
 extern uint8_t motion_distance;  // 运动目标距离
 extern uint8_t motion_energy; 	   // 运动目标能量值
@@ -72,10 +73,10 @@ extern uint8_t movingTargetZone;
 extern uint8_t stationaryTargetZone;
 
 // esp32 content
-void deal_to_esp32_content(uint32_t *content);
-void deal_esp32_return_content();
+void deal_esp32_return_content(uint8_t *content);
 
-
+void clear_content(uint8_t *content);
+	
 // radar
 void radar_setting(uint8_t bit, const uint8_t *msg);
 void radar_enable_config();

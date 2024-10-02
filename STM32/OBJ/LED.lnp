@@ -14,6 +14,7 @@
 "..\obj\servo.o"
 "..\obj\lcd.o"
 "..\obj\lcd_init.o"
+"..\obj\shoot.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart_1.o"

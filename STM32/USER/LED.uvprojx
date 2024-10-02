@@ -462,6 +462,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\LCD\lcd_init.c</FilePath>
             </File>
+            <File>
+              <FileName>shoot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Recharge\shoot.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

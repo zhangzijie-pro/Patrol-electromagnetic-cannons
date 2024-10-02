@@ -8,14 +8,14 @@ uint8_t esp_data;
 
 void esp_init(void)
 {
-		// 2. ÅäÖÃPB10 (TX) ºÍ PB11 (RX) Îª¸´ÓÃ¹¦ÄÜ
+		// 2. ï¿½ï¿½ï¿½ï¿½PB10 (TX) ï¿½ï¿½ PB11 (RX) Îªï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½
 		USART_InitTypeDef USART_InitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
 		NVIC_InitTypeDef NVIC_InitStructure;
 	
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	
-		// ÅäÖÃ GPIO Òý½Å
+		// ï¿½ï¿½ï¿½ï¿½ GPIO ï¿½ï¿½ï¿½ï¿½
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;  // PB10 -> TX
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -32,7 +32,7 @@ void esp_init(void)
 	
 		USART_DeInit(USART3);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-		// ÅäÖÃ USART3 ²ÎÊý
+		// ï¿½ï¿½ï¿½ï¿½ USART3 ï¿½ï¿½ï¿½ï¿½
     USART_InitStructure.USART_BaudRate = 115200;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -41,7 +41,7 @@ void esp_init(void)
     USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
     USART_Init(USART3, &USART_InitStructure);
 
-		// Ê¹ÄÜ USART
+		// Ê¹ï¿½ï¿½ USART
     USART_Cmd(USART3, ENABLE);
 		USART_ClearFlag(USART2, USART_FLAG_TC);
 		//USART_ITConfig(USART3,USART_IT_PE,ENABLE);

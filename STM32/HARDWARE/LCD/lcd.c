@@ -103,7 +103,7 @@ void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2,u16 color)
                 color   圆的颜色
       返回值：  无
 ******************************************************************************/
-void Draw1_Circle(u16 x0,u16 y0,u8 r,u16 color)
+void Draw_Circle(u16 x0,u16 y0,u8 r,u16 color)
 {
 	int a,b;
 	a=0;b=r;	  

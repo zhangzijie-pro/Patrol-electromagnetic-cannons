@@ -14,10 +14,10 @@ void hc_init(void)
     GPIO_InitTypeDef GPIO_InitStructure;
 		NVIC_InitTypeDef NVIC_InitStructure;
 		
-    // Ê¹ÄÜÊ±ÖÓ
+    // Ê¹ï¿½ï¿½Ê±ï¿½ï¿½
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-    // ÅäÖÃ GPIO Òý½Å
+    // ï¿½ï¿½ï¿½ï¿½ GPIO ï¿½ï¿½ï¿½ï¿½
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -30,7 +30,7 @@ void hc_init(void)
 		
 		//USART_DeInit(USART2);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-    // ÅäÖÃ USART ²ÎÊý
+    // ï¿½ï¿½ï¿½ï¿½ USART ï¿½ï¿½ï¿½ï¿½
     USART_InitStructure.USART_BaudRate = 9600;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -40,7 +40,7 @@ void hc_init(void)
     USART_Init(USART2, &USART_InitStructure);
 
 		
-    // Ê¹ÄÜ USART
+    // Ê¹ï¿½ï¿½ USART
     USART_Cmd(USART2, ENABLE);
 		USART_ClearFlag(USART2, USART_FLAG_TC);
 		// USART_ITConfig(USART2,USART_IT_IDLE,ENABLE);

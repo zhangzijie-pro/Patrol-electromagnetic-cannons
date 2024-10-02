@@ -34,7 +34,7 @@ void radar_usart_init(void)
 	
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	
-		// ÅäÖÃ GPIO Òý½Å
+		// ï¿½ï¿½ï¿½ï¿½ GPIO ï¿½ï¿½ï¿½ï¿½
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;  // PA0 -> TX
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -51,7 +51,7 @@ void radar_usart_init(void)
 	
 		USART_DeInit(UART4);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
-		// ÅäÖÃ USART4 ²ÎÊý
+		// ï¿½ï¿½ï¿½ï¿½ USART4 ï¿½ï¿½ï¿½ï¿½
     USART_InitStructure.USART_BaudRate = 115200;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -71,7 +71,7 @@ void radar_usart_init(void)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-				// Ê¹ÄÜ USART
+				// Ê¹ï¿½ï¿½ USART
     USART_Cmd(UART4, ENABLE);
 }
 
@@ -82,7 +82,7 @@ void UART4_IRQHandler(void){
 		if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET){
 			uint8_t radar_data = USART_ReceiveData(UART4);
 
-			if(enable_config==0){		// Õý³£Êý¾Ý¸ñÊ½
+			if(enable_config==0){		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¸ï¿½Ê½
 				if(RxState==0){
 					if(radar_data==RECEIVE_HEADER_1){
 						RxState=1;
@@ -101,7 +101,7 @@ void UART4_IRQHandler(void){
 						RxState=0;
 					}
 				}
-				else if(RxState==3){ // ¼ì²âÍêÖ¡Í·
+				else if(RxState==3){ // ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡Í·
 					if(radar_data == RECEIVE_HEADER_4){
 						RxState=4;
 					}else{
@@ -140,7 +140,7 @@ void UART4_IRQHandler(void){
 						RxState=0;
 					}
 				}
-			}else if(enable_config==1){	//ÅäÖÃÐÅÏ¢·µ»ØÖµ
+			}else if(enable_config==1){	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Öµ
 				if(RxState==0){
 					if(radar_data==0xFD){
 						RxState=1;
@@ -159,7 +159,7 @@ void UART4_IRQHandler(void){
 						RxState=0;
 					}
 				}
-				else if(RxState==3){ // ¼ì²âÍêÖ¡Í·
+				else if(RxState==3){ // ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡Í·
 					if(radar_data == 0xFA){
 						RxState=4;
 					}else{

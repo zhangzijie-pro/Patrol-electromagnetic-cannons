@@ -1,7 +1,10 @@
 #include "main.h"
 
 void return_target_state(void);
-
+void esp32_data();
+uint8_t i = 0;		// 计数
+uint8_t esp_content[6];
+uint8_t Get_esp_content=0;
 /***************************************************************************************************
      
 					GET_ANGLE -> Servo -> Send esp32 -> start_esp32 -> return content
@@ -11,8 +14,6 @@ void return_target_state(void);
 
 int main(void)
 {
-	uint8_t i = 0;
-
 	// 外设串口初始化
 	hc_init();
 	esp_init();
@@ -40,31 +41,45 @@ int main(void)
 			radar_receive_ok_flag=0;
 			esp_prinf("%x\r\n",radar_Serial_Buffer[0]);
 			esp_prinf("%x\r\n",radar_Serial_Buffer[1]);
-			//esp_prinf("%x\r\n",radar_Serial_Buffer[2]);
-//			esp_prinf("运动目标距离:%d\r\n",(radar_Serial_Buffer[6] << 8) | radar_Serial_Buffer[5]);
-//			esp_prinf("静止目标距离:%d\r\n",(radar_Serial_Buffer[8] << 8) | radar_Serial_Buffer[7]);
 			
 			deal_to_ld2412(radar_Serial_Buffer,&target_status,&motion_distance,&movingTargetZone,&static_distance,&stationaryTargetZone);
-			esp_prinf("目标状态:");
+			esp_prinf("?????:");
 			return_target_state();
 			esp_prinf("运动目标距离:%d, 在第%d区间\r\n",motion_distance,movingTargetZone);
 			esp_prinf("静止目标距离:%d, 在第%d区间\r\n",static_distance,stationaryTargetZone);
 			
 		}
 		
-		// 处理esp32得到数据
-//		if(esp_receive_ok_flag){
-//			esp_receive_ok_flag=0;
-//			i=0;
+		// 处理esp32内容
+		esp32_data();
+		if(Get_esp_content) {
+			deal_esp32_return_content(esp_content);
+			Get_esp_content=0;
+		}
+		
+		// freertos_demo();
+	}
+}
+
+void esp32_data(){
+		if(esp_receive_ok_flag){
+			esp_receive_ok_flag=0;
+			i=0;
+			if(esp_Serial_Buffer[0]==0xAA){
+				for(i=1;i<esp_counter;i++){
+					esp_content[i-1]=esp_Serial_Buffer[i];
+					if(esp_content[i-1]==0xFF){
+						esp_content[i-1]=9;
+						Get_esp_content=1;
+					}
+				}
+			}
 //			while(esp_counter--){
 //				USART_SendData(USART3,esp_Serial_Buffer[i++]);
 //				while(USART_GetFlagStatus(USART3,USART_FLAG_TC)==RESET);
 //			}
-//			esp_counter=0;
-//		}
-		
-		// freertos_demo();
-	}
+			esp_counter=0;
+		}
 }
 
 void return_target_state(void){

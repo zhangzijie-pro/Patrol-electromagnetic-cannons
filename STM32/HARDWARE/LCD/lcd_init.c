@@ -1,19 +1,22 @@
 #include "lcd_init.h"
 #include "delay.h"
 
-
 void LCD_GPIO_Init(void)
 {
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF|RCC_AHB1Periph_GPIOB, ENABLE);
 
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//普通输出模式
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
  
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5;
-	GPIO_Init(GPIOG, &GPIO_InitStructure);//初始化
-	GPIO_SetBits(GPIOG,GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15;
+	GPIO_Init(GPIOF, &GPIO_InitStructure);//初始化
+	GPIO_SetBits(GPIOF,GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
+	GPIO_SetBits(GPIOB,GPIO_Pin_2);
 }
 
 
@@ -135,12 +138,12 @@ void LCD_Init(void)
 	LCD_GPIO_Init();//初始化GPIO
 	
 	LCD_RES_Clr();//复位
-	delay_ms(200);
+	delay_ms(100);
 	LCD_RES_Set();
-	delay_ms(200);
+	delay_ms(100);
 	
 	LCD_BLK_Set();//打开背光
-  delay_ms(200);
+  delay_ms(100);
 	
 	//************* Start Initial Sequence **********//
 	LCD_WR_REG(0x11); //Sleep out 
@@ -231,16 +234,6 @@ void LCD_Init(void)
 
 
 
-/*
-example:
-		LCD_ShowChinese(24,10,"test",RED,WHITE,16,0);
-		LCD_ShowString(24,30,"LCD_W:",RED,WHITE,16,0);
-		LCD_ShowIntNum(72,30,LCD_W,3,RED,WHITE,16);
-		LCD_ShowString(24,50,"LCD_H:",RED,WHITE,16,0);
-		LCD_ShowIntNum(72,50,LCD_H,3,RED,WHITE,16);
-		LCD_ShowPicture(75,100,40,40,gImage_1);
-
-*/
 
 
 
