@@ -16,6 +16,7 @@ extern uint8_t esp_content_len;
 void esp_init(void);
 void esp_sendbyte(uint8_t Byte);
 void esp_sendArray(uint8_t *Array, uint16_t len);
+void esp_sendcmd(uint8_t cmd,uint8_t *Array, uint16_t len);
 void esp_sendString(char *String);
 void esp_prinf(char *format,...);
 

@@ -83,6 +83,14 @@ void esp_sendArray(uint8_t *Array, uint16_t len)
 		}
 }
 
+// 发送指令
+void esp_sendcmd(uint8_t cmd,uint8_t *Array, uint16_t len){
+	esp_sendbyte(0xAA);
+	esp_sendbyte(cmd);
+	esp_sendArray(Array,len);
+	esp_sendbyte(0xFF);
+}
+
 void esp_sendString(char *String)
 {
 	 while(*String!='\0')

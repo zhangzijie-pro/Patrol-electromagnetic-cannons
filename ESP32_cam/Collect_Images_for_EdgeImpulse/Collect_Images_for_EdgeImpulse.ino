@@ -29,35 +29,35 @@ using eloq::camera;
 using eloq::wifi;
 using eloq::viz::collectionServer;
 
-/*
-返回报文格式: [0xAA,0xAA,0x01,x,y,w,h,0x01,0x00] 9字节
+/******************************************************
+返回报文格式: [0xAA,0x01,0x01,x,y,w,h,0xFF] 8字节
     防止其余HC设备发送相同频率的信号串台，加入一个简易的双重验证
 
-1: head: 2字节      判断0xAA == 0xAA
+1: head: 2字节      判断0xAA    01 有效数据
 2: data: 5字节      { 1:是否有人体; x,y,w,h: 人体相对的坐标 }
-3: tail: 2字节      (0x01) && (!0x00)
-*/
+3: tail: 1字节      (0xFF)
+********************************************************/
 struct content {
   int header[2];
   int data[5];
-  int tail[2];
+  int tail;
 };
 
 void encapsulation_content(int *data) {
   struct content content1;
   content1.header[0] = 0xAA;
-  content1.header[1] = 0xAA;
+  content1.header[1] = 0x01;
 
   for (int i = 0; i < 5; i++) {
     content1.data[i] = data[i];
   }
 
-  content1.tail[0] = 0x01;
-  content1.tail[1] = 0x00;
+  content1.tail[0] = 0xFF;
 
   send_to_stm32(content1);
 }
 
+// 发送返回命令
 void send_to_stm32(struct content content1) {
   for (int i = 0; i < 2; i++) {
     Serial.write(content1.header[i]);
@@ -66,10 +66,10 @@ void send_to_stm32(struct content content1) {
   for (int i = 0; i < 5; i++) {
     Serial.write(content1.data[i]);
   }
-  for (int i = 0; i < 2; i++) {
-    Serial.write(content1.tail[i]);
-  }
+  Serial.write(content1.tail);
 }
+
+// 处理接受内容
 
 void setup() {
   delay(3000);

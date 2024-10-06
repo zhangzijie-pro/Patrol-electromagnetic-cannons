@@ -8,19 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LD_MODE  0  			// 0: LD2450  1:LD2412
 
-#if LD_MODE 
-	extern uint8_t radar_Serial_Buffer[50];
 
-#else
-	extern uint8_t target_one[8];
-	extern uint8_t target_two[8];
-	extern uint8_t target_three[8];
-
-#endif
-
-extern uint8_t config_return[50];
+//RADAR_BUFFER_MAX_LEN
+extern uint8_t radar_Serial_Buffer[50];
 extern uint8_t radar_receive_ok_flag;
 extern uint8_t radar_counter;
 

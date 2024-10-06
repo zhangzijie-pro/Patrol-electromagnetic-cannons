@@ -4,106 +4,100 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stm32f4xx_tim.h"
-#include "math.h"
 #include "radar.h"
-#include "delay.h"
-#include "esp32.h"
+#include "right_radar.h"
+#include "math.h"
+
 
 extern uint8_t enable_config;
 extern uint8_t engineer_state;
 
 // HEX
-// ÉèÖÃÃüÁîÊı¾İ³¤¶È
+// è®¾ç½®å‘½ä»¤æ•°æ®é•¿åº¦
 extern const uint8_t radar_four_bit_len[2];
 extern const uint8_t radar_two_bit_len[2];
 extern const uint8_t radar_eight_bit_len[2];
 extern const uint8_t radar_seven_bit_len[2];
 extern const uint8_t radar_16_bit_len[2];
 
-// À×´ïÊ¹ÄÜÅäÖÃºÍ½áÊøÅäÖÃ
+// é›·è¾¾ä½¿èƒ½é…ç½®å’Œç»“æŸé…ç½®
 extern const uint8_t enable_config_radar[4];
 extern const uint8_t disable_config_radar[2];
 
-// À×´ï·Ö±æÂÊÉèÖÃºÍ¶ÁÈ¡
+// é›·è¾¾åˆ†è¾¨ç‡è®¾ç½®å’Œè¯»å–
 extern const uint8_t radar_speed[8];
 extern const uint8_t read_speed[2];
 
-// »ù´¡ÉèÖÃºÍ¶ÁÈ¡
+// åŸºç¡€è®¾ç½®å’Œè¯»å–
 extern const uint8_t basic_config[7];
 extern const uint8_t read_basic_config[2];
 
-// ¹¤³ÌÄ£Ê½Ê¹ÄÜºÍ½áÊø
+// å·¥ç¨‹æ¨¡å¼ä½¿èƒ½å’Œç»“æŸ
 extern const uint8_t enable_engineer_model[2];
 extern const uint8_t disable_engineer_model[2];
 
-// ÔË¶¯ÁéÃô¶ÈÅäÖÃºÍ²éÑ¯
+// è¿åŠ¨çµæ•åº¦é…ç½®å’ŒæŸ¥è¯¢
 extern const uint8_t action_ling_config[16];
 extern const uint8_t search_action_ling[2];
 
-// ¾²Ö¹ÁéÃô¶ÈÅäÖÃºÍ²éÑ¯
+// é™æ­¢çµæ•åº¦é…ç½®å’ŒæŸ¥è¯¢
 extern const uint8_t static_ling_config[16];
 extern const uint8_t search_static_ling[2];
 
-// ¶¯Ì¬±³¾°Ğ£ÕıºÍ²éÑ¯
+// åŠ¨æ€èƒŒæ™¯æ ¡æ­£å’ŒæŸ¥è¯¢
 extern const uint8_t back[2];
 extern const uint8_t search_back[2];
 
-// ¹Ì¼şĞÅÏ¢²éÑ¯¡¢»Ö¸´³ö³§ºÍÖØÆô
+// å›ºä»¶ä¿¡æ¯æŸ¥è¯¢ã€æ¢å¤å‡ºå‚å’Œé‡å¯
 extern const uint8_t read_hardware[2];
 extern const uint8_t new_out[2];
 extern const uint8_t restart[2];
 
-// À¶ÑÀÉèÖÃ
+// è“ç‰™è®¾ç½®
 extern const uint8_t lanya[4];
 
-// ¹â¸Ğ¸¨Öú¿ØÖÆÅäÖÃºÍ²éÑ¯
+// å…‰æ„Ÿè¾…åŠ©æ§åˆ¶é…ç½®å’ŒæŸ¥è¯¢
 extern const uint8_t light_config[4];
 extern const uint8_t search_light_config[2];
 
-extern const uint8_t radar_header[4];		// Êı¾İÍ·
-extern const uint8_t radar_tail[4];			// Êı¾İÎ²
+extern const uint8_t radar_header[4];		// æ•°æ®å¤´
+extern const uint8_t radar_tail[4];			// æ•°æ®å°¾
 
-// esp32 content
-void deal_esp32_return_content(uint8_t *content);
+// å·¦ä¾§ç›®æ ‡å‚æ•°
+extern uint8_t target_status; 	   // ç›®æ ‡çŠ¶æ€
+extern uint8_t motion_distance;  // è¿åŠ¨ç›®æ ‡è·ç¦»
+extern uint8_t motion_energy; 	   // è¿åŠ¨ç›®æ ‡èƒ½é‡å€¼
+extern uint8_t static_distance;  // é™æ­¢ç›®æ ‡è·ç¦»
+extern uint8_t static_energy;     // é™æ­¢ç›®æ ‡èƒ½é‡å€¼
+extern uint8_t movingTargetZone;
+extern uint8_t stationaryTargetZone;
+extern uint8_t left_exist;
 
-void clear_content(uint8_t *content);
 
+// å³ä¾§ç›®æ ‡å‚æ•°
+extern uint8_t right_target_status; 	   // ç›®æ ‡çŠ¶æ€
+extern uint8_t right_motion_distance;  // è¿åŠ¨ç›®æ ‡è·ç¦»
+extern uint8_t right_motion_energy; 	   // è¿åŠ¨ç›®æ ‡èƒ½é‡å€¼
+extern uint8_t right_static_distance;  // é™æ­¢ç›®æ ‡è·ç¦»
+extern uint8_t right_static_energy;     // é™æ­¢ç›®æ ‡èƒ½é‡å€¼
+extern uint8_t right_movingTargetZone;
+extern uint8_t right_stationaryTargetZone;
+extern uint8_t right_exist;
 
-// basic radar
+// radar
 void radar_setting(uint8_t bit, const uint8_t *msg);
 void radar_enable_config();
 void radar_disable_config();
-
-#if LD_MODE
-extern uint8_t target_status; 	   // Ä¿±ê×´Ì¬
-extern uint8_t motion_distance;  // ÔË¶¯Ä¿±ê¾àÀë
-extern uint8_t motion_energy; 	   // ÔË¶¯Ä¿±êÄÜÁ¿Öµ
-extern uint8_t static_distance;  // ¾²Ö¹Ä¿±ê¾àÀë
-extern uint8_t static_energy;     // ¾²Ö¹Ä¿±êÄÜÁ¿Öµ
-extern uint8_t movingTargetZone;
-extern uint8_t stationaryTargetZone;
-
 void restart_radar();
 void start_engineer();
-void return_target_state(void);
 void new_radar();
 void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetDistance, uint8_t *movingTargetZone, uint8_t *stationaryTargetDistance, uint8_t *stationaryTargetZone);
-uint8_t Detection_interval(void);
-double Get_Angle_from_radar(void);
-#else 
 
-typedef struct{
-	__IO int16_t X_pos;		// x×ø±ê
-	__IO int16_t Y_pos;		// y×ø±ê
-	//__IO int16_t speed;		// ËÙ¶È
-	__IO uint16_t Zone;		// ¾àÀëÃÅ
-	__IO float  Angle;		// ½Ç¶È
-}Target_msg;
 
-void deal_ld2450_data(uint8_t *target, Target_msg *msg);
-float return_angle(int16_t x,int16_t y);
-
-#endif
-
+// æ£€æµ‹å·¦è¾¹é›·è¾¾åŒºé—´ 1~13
+uint8_t Left_Detection_interval();
+// æ£€æµ‹å³è¾¹é›·è¾¾åŒºé—´ 1~13
+uint8_t Right_Detection_interval();
+double Get_Angle_from_radar();
 
 #endif

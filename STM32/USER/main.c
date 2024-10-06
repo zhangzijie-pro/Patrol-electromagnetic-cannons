@@ -1,10 +1,32 @@
 #include "main.h"
 
-void return_target_state(void);
+/***************************************************************
+     
+													函数声明
+
+****************************************************************/
 void esp32_data();
+
+/***************************************************************
+     
+													变量声明
+
+****************************************************************/
+// 开灯
+uint8_t cmd1 = 0x01;
+uint16_t cmd1_Array[2]={0x01,0x00};
+// 开启摄像头: 前两位0001 开启摄像头, 后面0001为选择模式{1:识别人体,2,识别危险物体}
+uint8_t cmd2 = 0x02;
+uint16_t cmd2_Array[4]={0x01,0x00,0x01,0x00};
+
+// 声明3个目标结构体
+Target_msg target1;
+Target_msg target2;
+Target_msg target3;
+
 uint8_t i = 0;		// 计数
 uint8_t esp_content[6];
-uint8_t Get_esp_content=0;
+uint8_t Get_esp_content=0;		// esp是否接受到数据
 /***************************************************************************************************
      
 					GET_ANGLE -> Servo -> Send esp32 -> start_esp32 -> return content
@@ -32,22 +54,28 @@ int main(void)
 	esp_prinf("hello,esp\r\n");
 	hc_prinf("hello,hc\r\n");
 	Car_Set_Speed(1000);
-	//start_engineer();
-//	esp_prinf("engineer model: %d\r\n",engineer_state);
 	while(1)
 	{
-		Get_data_len();
+//	Get_data_len();
 		if(radar_receive_ok_flag){
 			radar_receive_ok_flag=0;
+#if LD_MODE
 			esp_prinf("%x\r\n",radar_Serial_Buffer[0]);
 			esp_prinf("%x\r\n",radar_Serial_Buffer[1]);
 			
 			deal_to_ld2412(radar_Serial_Buffer,&target_status,&motion_distance,&movingTargetZone,&static_distance,&stationaryTargetZone);
-			esp_prinf("?????:");
+			esp_prinf("目标信息:");
 			return_target_state();
-			esp_prinf("运动目标距离:%d, 在第%d区间\r\n",motion_distance,movingTargetZone);
+			esp_prinf("\r\n运动目标距离:%d, 在第%d区间\r\n",motion_distance,movingTargetZone);
 			esp_prinf("静止目标距离:%d, 在第%d区间\r\n",static_distance,stationaryTargetZone);
-			
+#else
+			esp_prinf("%x\r\n",target_one[0]);
+			esp_prinf("%x\r\n",target_one[1]);
+			deal_ld2450_data(target_one,&target1);
+			// get angle -> To Servo
+			esp_prinf("x: %d, y: %d, angle: %.2f\r\n",target1.X_pos,target1.Y_pos,target1.Angle);
+		
+#endif
 		}
 		
 		// 处理esp32内容
@@ -61,6 +89,7 @@ int main(void)
 	}
 }
 
+// 得到esp32返回数据
 void esp32_data(){
 		if(esp_receive_ok_flag){
 			esp_receive_ok_flag=0;
@@ -79,26 +108,6 @@ void esp32_data(){
 //				while(USART_GetFlagStatus(USART3,USART_FLAG_TC)==RESET);
 //			}
 			esp_counter=0;
-		}
-}
-
-void return_target_state(void){
-		switch(target_status){
-			case 0:
-				esp_prinf("没有发现目标");
-				break;
-			case 1:
-				esp_prinf("发现运动目标");
-				break;
-			case 2:
-				esp_prinf("发现静止目标");
-				break;
-			case 3:
-				esp_prinf("发现运动与静止目标");
-				break;
-			default:
-				esp_prinf("发现没有目标");
-				break;
 		}
 }
 

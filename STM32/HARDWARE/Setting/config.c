@@ -53,8 +53,8 @@ const uint8_t radar_tail[4] = {0x04, 0x03, 0x02, 0x01};			// 数据尾
 /***************************************************************************
      
 											esp32解析报文 
-			1.esp32-cam -> stm32f4: Usart		9字节报文 -> 6字节data
-			0xFF 0xFE 0xAA 0x00 0x00 0x00 0x00 0x00 0x00 0x55 0xFC
+			1.esp32-cam -> stm32f4: Usart		8字节报文 -> 6字节data
+					0xAA 0x01 0x01 0x00 0x00 0x00 0x00 0xFF
 
 ***************************************************************************/
 
@@ -92,7 +92,8 @@ void clear_content(uint8_t *content){
 
 /*************************
      
-			雷达配置内容
+			雷达配 置内容
+			LD2412 LD2450
 
 ************************/
 
@@ -146,6 +147,7 @@ void radar_disable_config(){
 
 }
 
+#if LD_MODE
 void radar_init_config(void){
 	radar_enable_config();
 	
@@ -234,6 +236,26 @@ void deal_to_ld2412(uint8_t *data, uint8_t *target_status,uint8_t *movingTargetD
 		}
 }
 
+void return_target_state(void){
+		switch(target_status){
+			case 0:
+				esp_prinf("没有发现目标");
+				break;
+			case 1:
+				esp_prinf("发现运动目标");
+				break;
+			case 2:
+				esp_prinf("发现静止目标");
+				break;
+			case 3:
+				esp_prinf("发现运动与静止目标");
+				break;
+			default:
+				esp_prinf("发现没有目标");
+				break;
+		}
+}
+
 // 检测区间 1~13
 uint8_t Detection_interval(){
 	if((movingTargetZone==0)&&(stationaryTargetZone==0)){
@@ -287,5 +309,43 @@ double Get_Angle_from_radar(){
 	return angle;
 }
 
+#else
+/*************************************************
+     
+										LD2450
 
+target_one   目标1信息
+target_two 	 目标2信息
+target_three 目标3信息
+************************************************/
 
+void deal_ld2450_data(uint8_t *target, Target_msg *msg){
+	// 单位: mm
+	msg->X_pos = target_one[0]|(target_one[1]<<8);
+	msg->Y_pos = target_one[2]|(target_one[3]<<8);
+	if(target_one[1]&0x80){
+		msg->X_pos -= 0x8000;
+		msg->Y_pos -= 0x8000;
+	}else{
+		msg->Y_pos -= 0x8000;
+	}
+	msg->Zone = target[6]+target[7]*256;
+	// 角度: float
+	msg->Angle = return_angle(msg->X_pos,msg->Y_pos);
+}
+
+// 返回舵机角度
+float return_angle(int16_t x,int16_t y)
+{
+	double angle = atan2(y,x);
+	
+	double target_angle = angle*(180.0/M_PI);
+	if(angle>0)
+	{
+		return (float)(target_angle+90.0);
+	}else if(angle<0){
+		return (float)(90.0-target_angle);
+	}
+}
+
+#endif

@@ -1,56 +1,35 @@
 #include "radar.h"
 #include "config.h"
 
+#define RECEIVE_HEADER_1 0xF4
+#define RECEIVE_HEADER_2 0xF3
+#define RECEIVE_HEADER_3 0xF2
+#define RECEIVE_HEADER_4 0xF1
 
+#define RECEIVE_FOOTER_1 0xF8
+#define RECEIVE_FOOTER_2 0xF7
+#define RECEIVE_FOOTER_3 0xF6
+#define RECEIVE_FOOTER_4 0xF5
+
+
+uint8_t radar_Serial_Buffer[50];
 uint8_t radar_receive_ok_flag=0;
 uint8_t radar_counter;
-uint8_t data_len=8;
-uint8_t config_return[50];
+uint8_t data_len;
 
-#if LD_MODE 
-	// LD2412 帧头 尾
-	#define RECEIVE_HEADER_1 0xF4
-	#define RECEIVE_HEADER_2 0xF3
-	#define RECEIVE_HEADER_3 0xF2
-	#define RECEIVE_HEADER_4 0xF1
-
-	#define RECEIVE_FOOTER_1 0xF8
-	#define RECEIVE_FOOTER_2 0xF7
-	#define RECEIVE_FOOTER_3 0xF6
-	#define RECEIVE_FOOTER_4 0xF5
-	
-	uint8_t radar_Serial_Buffer[50];
-
-	// LD2412数据长度
 void Get_data_len(){
-		data_len = (0x00<<8|0x0B)+2;
-		if(radar_Serial_Buffer[0]==0x2B){
-			data_len = (0x00<<8|0x2B)+2;
-		}
+//	if(engineer_state) data_len=(0x00<<8|0x2B)+2;
+//	else data_len=(0x00<<8|0x0B)+2;
+	data_len = (0x00<<8|0x0B)+2;
+	if(radar_Serial_Buffer[0]==0x2B){
+		data_len = (0x00<<8|0x2B)+2;
+	}
 }
-	
-#else
-	// LD2450 帧头 尾
-	#define RECEIVE_HEADER_50_1 0xAA
-	#define RECEIVE_HEADER_50_2 0xFF
-	#define RECEIVE_HEADER_50_3 0x03
-	#define RECEIVE_HEADER_50_4 0x00
-
-	#define RECEIVE_FOOTER_50_1 0x55
-	#define RECEIVE_FOOTER_50_2 0xCC
-	
-	uint8_t target_one[8];
-	uint8_t target_two[8];
-	uint8_t target_three[8];
-
-#endif
-
 
 void radar_usart_init(void)
 {
 		USART_InitTypeDef USART_InitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
-		NVIC_InitTypeDef NVIC_InitStructure;
 	
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	
@@ -83,15 +62,9 @@ void radar_usart_init(void)
 
 		USART_ITConfig(UART4,USART_IT_RXNE,ENABLE);
 		
-		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 		
-		NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
 		
-				// ʹ�� USART
+				// 初始化
     USART_Cmd(UART4, ENABLE);
 }
 
@@ -103,8 +76,6 @@ void UART4_IRQHandler(void){
 			uint8_t radar_data = USART_ReceiveData(UART4);
 
 			if(enable_config==0){		// �������ݸ�ʽ
-#if LD_MODE 
- // LD2412				
 				if(RxState==0){
 					if(radar_data==RECEIVE_HEADER_1){
 						RxState=1;
@@ -162,68 +133,7 @@ void UART4_IRQHandler(void){
 						RxState=0;
 					}
 				}
-#else
-	// receive LD2450
-				if(RxState==0){
-					if(radar_data==RECEIVE_HEADER_50_1){
-						RxState=1;
-					}
-				}else if(RxState==1){
-					if(radar_data == RECEIVE_HEADER_50_2){
-						RxState=2;
-					}else{
-						RxState=0;
-					}
-				}
-				else if(RxState==2){
-					if(radar_data == RECEIVE_HEADER_50_3){
-						RxState=3;
-					}else{
-						RxState=0;
-					}
-				}else if(RxState==3){ // 判断完帧头
-					if(radar_data == RECEIVE_HEADER_50_4){
-						RxState=4;
-					}else{
-						RxState=0;
-					}
-				}else if(RxState==4){		// 接受目标1信息
-					target_one[pRxPacket] = radar_data;
-					pRxPacket++;
-					if(pRxPacket>=8){
-						RxState=5;
-						pRxPacket=0;
-					}
-				}else if(RxState==5){		// 接受目标2信息
-					target_two[pRxPacket] = radar_data;
-					pRxPacket++;
-					if(pRxPacket>=8){
-						RxState=6;
-						pRxPacket=0;
-					}
-				}else if(RxState==6){		// 接受目标3信息
-					target_three[pRxPacket] = radar_data;
-					pRxPacket++;
-					if(pRxPacket>=8){
-						RxState=7;
-						pRxPacket=0;
-					}
-				}else if(RxState==7){		// 判断帧尾
-					if(radar_data == RECEIVE_FOOTER_50_1){
-						RxState=8;
-					}else{
-						RxState=0;
-					}
-				}else if(RxState==8){
-					if(radar_data == RECEIVE_FOOTER_50_2){
-						RxState=0;
-						radar_receive_ok_flag=1;
-					}else{
-						RxState=0;
-					}
-				}
-#endif
-			}else if(enable_config==1){
+			}else if(enable_config==1){	//������Ϣ����ֵ
 				if(RxState==0){
 					if(radar_data==0xFD){
 						RxState=1;
@@ -249,7 +159,7 @@ void UART4_IRQHandler(void){
 						RxState=0;
 					}
 				}else if(RxState==4){
-					config_return[pRxPacket] = radar_data;
+					radar_Serial_Buffer[pRxPacket] = radar_data;
 					pRxPacket++;
 					if(radar_data==0x04){
 						RxState=5;
