@@ -74,8 +74,18 @@ void deal_esp32_return_content(uint8_t *content){
 		}
 		else if(content[1]==0x02)
 		{
-			// 检测到多人目标
-			esp_prinf("多人目标");
+			// 是否开启灯
+			esp_prinf("");
+		}
+		else if(content[1]==0x03)
+		{
+			// 是否开启摄像头
+			esp_prinf("");
+		}
+		else if(content[1]==0x04)
+		{
+			// 返回其他内容
+			esp_prinf("");
 		}
 	}else if(content[0]==0x00)
 	{
@@ -321,31 +331,48 @@ target_three 目标3信息
 
 void deal_ld2450_data(uint8_t *target, Target_msg *msg){
 	// 单位: mm
-	msg->X_pos = target_one[0]|(target_one[1]<<8);
-	msg->Y_pos = target_one[2]|(target_one[3]<<8);
-	if(target_one[1]&0x80){
-		msg->X_pos -= 0x8000;
-		msg->Y_pos -= 0x8000;
+	if((target[0]!=0)||(target[1]!=0)){
+		msg->Have_data=1;
 	}else{
-		msg->Y_pos -= 0x8000;
+		msg->Have_data=0;
+		msg->Y_pos=0;
+	}
+	msg->X_pos = target[0]|(target[1]<<8);
+	msg->Y_pos = target[2]|(target[3]<<8);
+	if(target[1]&0x80){
+		msg->X_pos -= 32768;
+		msg->Y_pos -= 32768;
+	}else{
+		msg->X_pos = (-msg->X_pos);
+		if(msg->Y_pos!=0){
+			msg->Y_pos -= 32768;
+		}
 	}
 	msg->Zone = target[6]+target[7]*256;
 	// 角度: float
 	msg->Angle = return_angle(msg->X_pos,msg->Y_pos);
 }
 
+int8_t *return_mid_point(Target_msg *msg1,Target_msg *msg2,Target_msg *msg3){
+	int16_t mid_y = (msg1->Y_pos+msg2->Y_pos+msg3->Y_pos)/3;
+	
+	int16_t mid_x;
+	
+}
+
 // 返回舵机角度
 float return_angle(int16_t x,int16_t y)
 {
-	double angle = atan2(y,x);
+	double angle = atan2(x,y);
 	
 	double target_angle = angle*(180.0/M_PI);
-	if(angle>0)
-	{
-		return (float)(target_angle+90.0);
-	}else if(angle<0){
-		return (float)(90.0-target_angle);
-	}
+	return (float)target_angle;
+//	if(angle>0)
+//	{
+//		return (float)(target_angle+90.0);
+//	}else if(angle<0){
+//		return (float)(90.0-target_angle);
+//	}
 }
 
 #endif

@@ -10,15 +10,13 @@
 #include "led.h"
 #include "key.h"
 
+// 
+#include "shoot.h"
 
 // car and servo
 #include "motor.h"
 #include "Servo.h"
 
-// LCD
-#include "lcd.h"
-#include "lcd_init.h"
-#include "pic.h"
 
 // USART
 #include "esp32.h"

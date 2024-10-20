@@ -75,6 +75,7 @@ void radar_enable_config();
 void radar_disable_config();
 
 #if LD_MODE
+
 extern uint8_t target_status; 	   // 目标状态
 extern uint8_t motion_distance;  // 运动目标距离
 extern uint8_t motion_energy; 	   // 运动目标能量值
@@ -93,6 +94,7 @@ double Get_Angle_from_radar(void);
 #else 
 
 typedef struct{
+	__IO uint8_t Have_data;	// 是否存在数据
 	__IO int16_t X_pos;		// x坐标
 	__IO int16_t Y_pos;		// y坐标
 	//__IO int16_t speed;		// 速度
