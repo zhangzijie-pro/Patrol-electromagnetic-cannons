@@ -14,7 +14,7 @@
 
 // 进行摄像头拍照采集样本训练
 
-#define WIFI_SSID "vivo S1"     // your wifi username
+#define WIFI_SSID "vivo"     // your wifi username
 #define WIFI_PASS "zzj55555"    // your wifi password
 #define HOSTNAME "esp32cam"
 #define LED_PIN 4
@@ -37,38 +37,6 @@ using eloq::viz::collectionServer;
 2: data: 5字节      { 1:是否有人体; x,y,w,h: 人体相对的坐标 }
 3: tail: 1字节      (0xFF)
 ********************************************************/
-struct content {
-  int header[2];
-  int data[5];
-  int tail;
-};
-
-void encapsulation_content(int *data) {
-  struct content content1;
-  content1.header[0] = 0xAA;
-  content1.header[1] = 0x01;
-
-  for (int i = 0; i < 5; i++) {
-    content1.data[i] = data[i];
-  }
-
-  content1.tail[0] = 0xFF;
-
-  send_to_stm32(content1);
-}
-
-// 发送返回命令
-void send_to_stm32(struct content content1) {
-  for (int i = 0; i < 2; i++) {
-    Serial.write(content1.header[i]);
-    Serial.
-  }
-  for (int i = 0; i < 5; i++) {
-    Serial.write(content1.data[i]);
-  }
-  Serial.write(content1.tail);
-}
-
 // 处理接受内容
 
 void setup() {
@@ -95,6 +63,7 @@ void setup() {
   while (!wifi.connect().isOk())
     Serial.println(wifi.exception.toString());
 
+  //  http://192.168.43.46/
   // init face detection http server
   while (!collectionServer.begin().isOk())
     Serial.println(collectionServer.exception.toString());

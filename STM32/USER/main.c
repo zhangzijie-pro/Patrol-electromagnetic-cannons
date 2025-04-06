@@ -73,8 +73,8 @@ int main(void)
 	{
 		LED1=0;
 		LED2=0;
-//		radar_data();
-//		
+		radar_data();
+		
 //		// 处理esp32内容
 //		esp32_data();
 //		if(Get_esp_content) {
@@ -127,7 +127,8 @@ void radar_data(void){
 			angle_radar_1 = judgment_data(&target1);
 			// get angle -> To Servo
 			esp_prinf("target 1: %d",target1.Have_data);
-			esp_prinf("x: %d, y: %d, angle: %.2f\r\n",target1.X_pos,target1.Y_pos,target1.Angle);
+			float len = sqrt((target1.X_pos*target1.X_pos)+(target1.Y_pos*target1.Y_pos))/10000;	//m
+			esp_prinf("x: %d, y: %d, len: %.2f angle: %.2f\r\n",target1.X_pos,target1.Y_pos,len,target1.Angle);
 			
 			// 处理目标2
 			deal_ld2450_data(target_two,&target2);
